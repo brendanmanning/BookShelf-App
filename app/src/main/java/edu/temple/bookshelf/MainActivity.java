@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
-    private BookList books = new BookList();
+    private BookList books = Books.getSamples();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

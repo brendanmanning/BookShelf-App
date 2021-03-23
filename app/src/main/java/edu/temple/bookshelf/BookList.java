@@ -7,6 +7,11 @@ public class BookList {
     private ArrayList<Book> list = new ArrayList<Book>();
 
     public BookList() {}
+    public BookList(Book[] books) {
+        for(Book b : books) {
+            list.add(b);
+        }
+    }
 
     public boolean add(Book book) {
         return list.add(book);
