@@ -7,6 +7,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +19,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class BookListFragment extends Fragment {
+
+    private ArrayList<Book> books = new ArrayList<Book>();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,6 +33,8 @@ public class BookListFragment extends Fragment {
 
     public BookListFragment() {
         // Required empty public constructor
+        books.add(Books.getSamples().get(0));
+        books.add(Books.getSamples().get(1));
     }
 
     /**
@@ -37,11 +46,10 @@ public class BookListFragment extends Fragment {
      * @return A new instance of fragment BookListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static BookListFragment newInstance(String param1, String param2) {
+    public static BookListFragment newInstance(BookList bookList) {
         BookListFragment fragment = new BookListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelableArrayList("book_list", bookList.toArrayList());
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,7 +66,24 @@ public class BookListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_book_list, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_book_list, container, false);
+
+        ListView listView = view.findViewById(R.id.fragmentListView);
+        listView.setAdapter(new BookListAdapter(getContext(), android.R.layout.simple_list_item_1, books));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("In onItemClick");
+                ((ListFragmentInterface) getActivity()).onSelectItem(books.get(position));
+            }
+        });
+
+        return view;
+
+    }
+
+    public interface ListFragmentInterface {
+        void onSelectItem(Book book);
     }
 }

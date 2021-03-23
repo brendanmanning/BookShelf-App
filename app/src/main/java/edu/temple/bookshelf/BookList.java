@@ -13,6 +13,10 @@ public class BookList {
         }
     }
 
+    public ArrayList<Book> toArrayList() {
+        return list;
+    }
+
     public boolean add(Book book) {
         return list.add(book);
     }
