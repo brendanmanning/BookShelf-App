@@ -17,32 +17,32 @@ public class BookDetailsFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "book_title";
+    private static final String ARG_PARAM2 = "book_author";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String bookTitle;
+    private String bookAuthor;
 
     public BookDetailsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BookDetailsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static BookDetailsFragment newInstance(String param1, String param2) {
+    public void displayBook(Book book) {
+        // 
+    }
+
+    public static BookDetailsFragment newInstance(Book book) {
+        System.out.println("In newInstance(Book book)");
         BookDetailsFragment fragment = new BookDetailsFragment();
+        System.out.println("Created fragment");
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        System.out.println("Created bundle");
+        args.putString(ARG_PARAM1, book.getTitle());
+        args.putString(ARG_PARAM2, book.getAuthor());
+        System.out.println("Added arguments");
         fragment.setArguments(args);
+        System.out.println("Set arguments");
         return fragment;
     }
 
@@ -50,8 +50,8 @@ public class BookDetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            bookTitle = getArguments().getString(ARG_PARAM1);
+            bookAuthor = getArguments().getString(ARG_PARAM2);
         }
     }
 
