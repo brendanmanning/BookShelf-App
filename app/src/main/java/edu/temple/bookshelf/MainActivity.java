@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             If a book was selected, and we now have a single container, replace
             BookListFragment with BookDetailsFragment, making the trans
              */
-            onSelectItem(restore_book_index, books.get(restore_book_index));
+            //onSelectItem(restore_book_index, books.get(restore_book_index));
         }
 
     }
