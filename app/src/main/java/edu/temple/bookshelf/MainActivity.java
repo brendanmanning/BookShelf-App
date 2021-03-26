@@ -55,20 +55,20 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         If we have two containers available, load a single instance
         of BookDetailsFragment to display all selected books
          */
-//        bdf = (restore_book_index == -1) ? new BookDetailsFragment() : BookDetailsFragment.newInstance(books.get(restore_book_index));
-//        if (!singlePane) {
-//            System.out.println("Condition 4");
-//            fm.beginTransaction()
-//                    .replace(R.id.fragment2, bdf)
-//                    .commit();
-//        } else if (restore_book_index != -1) {
-//            System.out.println("Condition 5");
-//            /*
-//            If a book was selected, and we now have a single container, replace
-//            BookListFragment with BookDetailsFragment, making the trans
-//             */
-//            onSelectItem(restore_book_index, books.get(restore_book_index));
-//        }
+        bdf = (restore_book_index == -1) ? new BookDetailsFragment() : BookDetailsFragment.newInstance(books.get(restore_book_index));
+        if (!singlePane) {
+            System.out.println("Condition 4");
+            fm.beginTransaction()
+                    .replace(R.id.fragment2, bdf)
+                    .commit();
+        } else if (restore_book_index != -1) {
+            System.out.println("Condition 5");
+            /*
+            If a book was selected, and we now have a single container, replace
+            BookListFragment with BookDetailsFragment, making the trans
+             */
+            onSelectItem(restore_book_index, books.get(restore_book_index));
+        }
 
     }
 
