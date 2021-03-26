@@ -15,6 +15,11 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
     private BookList books = Books.getSamples();
 
+    private FragmentManager fm;
+
+    private BookListFragment blf = BookListFragment.newInstance(books);
+    private BookDetailsFragment bdf = new BookDetailsFragment();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +35,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         boolean singlePane = findViewById(R.id.fragment2) == null;
         System.out.println(singlePane ? "SINGLE PANE" : "MULTIPLE PANES");
 
-        FragmentManager fm = getSupportFragmentManager();
-        BookDetailsFragment bdf = new BookDetailsFragment();
+        fm = getSupportFragmentManager();
+
 
         Fragment frag1 = getSupportFragmentManager().findFragmentById(R.id.fragment1);
 
@@ -42,12 +47,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         } else if (!(frag1 instanceof BookListFragment)) {
             System.out.println("Condition 2");
             fm.beginTransaction()
-                    .add(R.id.fragment1, BookListFragment.newInstance(Books.getSamples()))
+                    .add(R.id.fragment1, blf)
                     .commit();
         } else if (frag1 instanceof BookListFragment) {
             System.out.println("Condition 3");
             fm.beginTransaction()
-                    .replace(R.id.fragment1, BookListFragment.newInstance(Books.getSamples()))
+                    .replace(R.id.fragment1, blf)
                     .commit();
         }
 
@@ -55,7 +60,13 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         If we have two containers available, load a single instance
         of BookDetailsFragment to display all selected books
          */
-        bdf = (restore_book_index == -1) ? new BookDetailsFragment() : BookDetailsFragment.newInstance(books.get(restore_book_index));
+        //bdf = (restore_book_index == -1) ? new BookDetailsFragment() : BookDetailsFragment.newInstance(books.get(restore_book_index));
+
+        if(restore_book_index != -1) {
+            onSelectItem(restore_book_index, books.get(restore_book_index));
+            //bdf.displayBook(books.get(restore_book_index));
+        }
+
         if (!singlePane) {
             System.out.println("Condition 4");
             fm.beginTransaction()
@@ -85,17 +96,19 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     public void onSelectItem(int position, Book book) {
         System.out.println("In MainActivity.onSelectItem(Book book)");
         this.saved_book_index = position;
+        bdf.displayBook(book);
         if(findViewById(R.id.fragment2) == null) {
-            System.out.println("Passed the null check!");
+            System.out.println("Replacing fragment");
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment1, BookDetailsFragment.newInstance(book))
+                    .replace(R.id.fragment1, bdf)
                     .addToBackStack(null)
                     .commit();
         } else {
+            System.out.println("Setting in fragment 2");
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment2, BookDetailsFragment.newInstance(book))
+                    .replace(R.id.fragment2, bdf)
                     .addToBackStack(null)
                     .commit();
         }

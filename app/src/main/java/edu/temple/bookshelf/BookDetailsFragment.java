@@ -30,7 +30,17 @@ public class BookDetailsFragment extends Fragment {
     }
 
     public void displayBook(Book book) {
-        // 
+        System.out.println("Running displayBook(Book book)");
+        this.bookTitle = book.getTitle();
+        this.bookAuthor = book.getAuthor();
+
+        // This allows us to use the same fragment multiple times
+        if (!this.isDetached() && getFragmentManager() != null) {
+            getFragmentManager().beginTransaction()
+                    .detach(this)
+                    .attach(this)
+                    .commit();
+        }
     }
 
     public static BookDetailsFragment newInstance(Book book) {
