@@ -70,4 +70,9 @@ public class BookDetailsFragment extends Fragment {
 
         return view;
     }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
 }
