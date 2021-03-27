@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
         // Determine the presentation view
         boolean singlePane = findViewById(R.id.fragment2) == null;
-        System.out.println(singlePane ? "SINGLE PANE" : "MULTIPLE PANES");
 
         // Get the Fragment manager and access the main fragment
         fm = getSupportFragmentManager();
@@ -47,15 +46,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
         // At this point, I only want to have BookListFragment be displayed in container_1
         if (frag1 instanceof BookDetailsFragment) {
-            System.out.println("Condition 1");
             fm.popBackStack();
         } else if (!(frag1 instanceof BookListFragment)) {
-            System.out.println("Condition 2");
             fm.beginTransaction()
                     .add(R.id.fragment1, blf)
                     .commit();
         } else if (frag1 instanceof BookListFragment) {
-            System.out.println("Condition 3");
             fm.beginTransaction()
                     .replace(R.id.fragment1, blf)
                     .commit();
@@ -67,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         }
 
         if (!singlePane) {
-            System.out.println("Condition 4");
             fm.beginTransaction()
                     .replace(R.id.fragment2, bdf)
                     .commit();
