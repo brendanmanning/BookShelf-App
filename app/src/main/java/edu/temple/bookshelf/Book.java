@@ -6,9 +6,10 @@ import android.os.Parcelable;
 public class Book implements Parcelable {
 
     // ------ Getters and Setters ------ //
-
+    private int id;
     private String title;
     private String author;
+    private String coverURL;
 
     public String getTitle() {
         return title;
@@ -16,6 +17,7 @@ public class Book implements Parcelable {
     public String getAuthor() {
         return author;
     }
+    public String getCoverURL() { return coverURL; }
 
     public Book(String title, String author) {
         this.title = title;
