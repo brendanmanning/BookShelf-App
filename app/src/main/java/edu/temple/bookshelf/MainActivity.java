@@ -13,8 +13,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     private final String KEY_SAVED_BOOK = "saved_book";
     private int saved_book_index = -1;
 
-    private BookList books = Books.getSamples();
-
     private FragmentManager fm;
 
     private BookListFragment blf = BookListFragment.newInstance(books);
