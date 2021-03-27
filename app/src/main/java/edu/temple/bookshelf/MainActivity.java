@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements BookListFragment.ListFragmentInterface {
@@ -26,16 +28,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /**
+         * BASIC SETUP
+         */
+
         // Bind UI items
         searchButton = findViewById(R.id.searchButton);
-
-        // Read from the Bundle
-        int restore_book_index = -1;
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(KEY_SAVED_BOOK)) {
-                restore_book_index = savedInstanceState.getInt(KEY_SAVED_BOOK);
-            }
-        }
 
         // Determine the presentation view
         boolean singlePane = findViewById(R.id.fragment2) == null;
@@ -43,6 +41,11 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         // Get the Fragment manager and access the main fragment
         fm = getSupportFragmentManager();
         Fragment frag1 = getSupportFragmentManager().findFragmentById(R.id.fragment1);
+
+        /**
+         * SHOW THE LIST VIEW
+         * via replace or add depending on the context
+         */
 
         // At this point, I only want to have BookListFragment be displayed in container_1
         if (frag1 instanceof BookDetailsFragment) {
@@ -57,16 +60,40 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     .commit();
         }
 
+        /**
+         * RESTORE PREVIOUSLY SELECTED ITEM TO DETAIL VIEW
+         */
+
+        // Figure out what the saved book (if there is one) is
+        int restore_book_index = -1;
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(KEY_SAVED_BOOK)) {
+                restore_book_index = savedInstanceState.getInt(KEY_SAVED_BOOK);
+            }
+        }
+
+        // Update the display fragment if there is a previous item
         if(restore_book_index != -1) {
             // TODO: - Put this line back
             // onSelectItem(restore_book_index, books.get(restore_book_index));
         }
 
+        // The presentation will be different for landscape/large screen modes
         if (!singlePane) {
             fm.beginTransaction()
                     .replace(R.id.fragment2, bdf)
                     .commit();
         }
+
+        /**
+         * BIND LISTENERS TO UI ACTIONS
+         */
+
+        // Listen for search button clicks
+        searchButton.setOnClickListener(v -> {
+            Intent launchSearchIntent = new Intent(this, BookSearchActivity.class);
+            startActivity(launchSearchIntent);
+        });
 
     }
 
