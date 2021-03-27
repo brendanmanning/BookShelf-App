@@ -7,6 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
+import java.util.function.Function;
+
 public class BookSearchActivity extends AppCompatActivity {
 
     EditText searchEditText;
@@ -14,8 +19,11 @@ public class BookSearchActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_search);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         /**
          * BIND UI COMPONENTS
@@ -27,7 +35,12 @@ public class BookSearchActivity extends AppCompatActivity {
          * BIND UI HANDLERS
          */
         searchButton.setOnClickListener(v -> {
-
+            BookList.fromSearch(requestQueue, searchEditText.getText().toString(), bookList -> {
+                System.out.println("Got a booklist");
+                System.out.println(bookList);
+                return null;
+            });
+            requestQueue.start();
         });
 
     }
