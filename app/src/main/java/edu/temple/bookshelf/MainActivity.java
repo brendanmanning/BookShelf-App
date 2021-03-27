@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
     private FragmentManager fm;
 
-    private BookListFragment blf = BookListFragment.newInstance(books);
+    private BookListFragment blf = new BookListFragment();
     private BookDetailsFragment bdf = new BookDetailsFragment();
 
     @Override
@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         //bdf = (restore_book_index == -1) ? new BookDetailsFragment() : BookDetailsFragment.newInstance(books.get(restore_book_index));
 
         if(restore_book_index != -1) {
-            onSelectItem(restore_book_index, books.get(restore_book_index));
-            //bdf.displayBook(books.get(restore_book_index));
+            // TODO: - Put this line back
+            // onSelectItem(restore_book_index, books.get(restore_book_index));
         }
 
         if (!singlePane) {
