@@ -7,7 +7,7 @@
     tools:context=".BookSearchActivity">
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/searchSearchInput"
         android:layout_width="226dp"
         android:layout_height="44dp"
         android:layout_marginStart="32dp"
@@ -15,18 +15,18 @@
         android:ems="10"
         android:hint="@string/activity_book_search_searchbar_input_text_hint"
         android:inputType="textPersonName"
-        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintEnd_toStartOf="@+id/searchSearchButton"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="42dp" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/searchSearchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="32dp"
         android:text="@string/activity_book_search_searchbar_button_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName"
+        app:layout_constraintStart_toEndOf="@+id/searchSearchInput"
         tools:layout_editor_absoluteY="39dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
