@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements BookListFragment.ListFragmentInterface {
 
@@ -18,11 +19,17 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     private BookListFragment blf = new BookListFragment();
     private BookDetailsFragment bdf = new BookDetailsFragment();
 
+    private Button searchButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Bind UI items
+        searchButton = findViewById(R.id.searchButton);
+
+        // Read from the Bundle
         int restore_book_index = -1;
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(KEY_SAVED_BOOK)) {
@@ -30,12 +37,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             }
         }
 
+        // Determine the presentation view
         boolean singlePane = findViewById(R.id.fragment2) == null;
         System.out.println(singlePane ? "SINGLE PANE" : "MULTIPLE PANES");
 
+        // Get the Fragment manager and access the main fragment
         fm = getSupportFragmentManager();
-
-
         Fragment frag1 = getSupportFragmentManager().findFragmentById(R.id.fragment1);
 
         // At this point, I only want to have BookListFragment be displayed in container_1
@@ -54,12 +61,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     .commit();
         }
 
-        /*
-        If we have two containers available, load a single instance
-        of BookDetailsFragment to display all selected books
-         */
-        //bdf = (restore_book_index == -1) ? new BookDetailsFragment() : BookDetailsFragment.newInstance(books.get(restore_book_index));
-
         if(restore_book_index != -1) {
             // TODO: - Put this line back
             // onSelectItem(restore_book_index, books.get(restore_book_index));
@@ -70,13 +71,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             fm.beginTransaction()
                     .replace(R.id.fragment2, bdf)
                     .commit();
-        } else if (restore_book_index != -1) {
-            System.out.println("Condition 5");
-            /*
-            If a book was selected, and we now have a single container, replace
-            BookListFragment with BookDetailsFragment, making the trans
-             */
-            //onSelectItem(restore_book_index, books.get(restore_book_index));
         }
 
     }
