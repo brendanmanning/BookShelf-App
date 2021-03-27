@@ -37,7 +37,7 @@ public class BookSearchActivity extends AppCompatActivity {
         searchButton.setOnClickListener(v -> {
             BookList.fromSearch(requestQueue, searchEditText.getText().toString(), bookList -> {
                 System.out.println("Got a booklist");
-                System.out.println(bookList);
+                System.out.println("First title: " + bookList.get(0).getTitle());
                 return null;
             });
             requestQueue.start();

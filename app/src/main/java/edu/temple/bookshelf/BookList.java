@@ -39,7 +39,6 @@ public class BookList {
             }
             return null;
         });
-        callback.apply(new BookList());
     }
 
     public ArrayList<Book> toArrayList() {
