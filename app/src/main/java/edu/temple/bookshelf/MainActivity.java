@@ -1,6 +1,7 @@
 package edu.temple.bookshelf;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -10,6 +11,19 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BookListFragment.ListFragmentInterface {
 
@@ -92,9 +106,20 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         // Listen for search button clicks
         searchButton.setOnClickListener(v -> {
             Intent launchSearchIntent = new Intent(this, BookSearchActivity.class);
-            startActivity(launchSearchIntent);
+            startActivityForResult(launchSearchIntent, 123);
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 123) {
+            if(resultCode == 456) {
+                List<Book> bookArrayList = data.getParcelableArrayListExtra("val");
+                blf.displayList(bookArrayList);
+            }
+        }
     }
 
     @Override

@@ -1,5 +1,8 @@
 package edu.temple.bookshelf;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.android.volley.RequestQueue;
 
 import org.json.JSONException;
@@ -21,13 +24,22 @@ public class BookList {
 
     public static void fromSearch(RequestQueue requestQueue, String search, Function<BookList, Void> callback) {
         System.out.println("In BookList.fromSearch");
-        Api.search(requestQueue, search, jsonObject -> {
+        Api.search(requestQueue, search, jsonArray -> {
             System.out.println("In Api.search callback");
-            try {
-                Book[] books = new Book[jsonObject.length()];
 
-                for (int i = 0; i < jsonObject.length(); i++) {
-                    JSONObject bookJson = jsonObject.getJSONObject(String.valueOf(i));
+            if(jsonArray == null) {
+                System.out.println("jsonArray is null");
+                return null;
+            } else {
+                System.out.println("jsonArray is printed below");
+                System.out.println(jsonArray.toString());
+            }
+
+            try {
+                Book[] books = new Book[jsonArray.length()];
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject bookJson = jsonArray.getJSONObject(i);
                     books[i] = new Book(bookJson.getString("title"), bookJson.getString("author"));
                 }
 

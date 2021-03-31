@@ -12,6 +12,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,7 +21,7 @@ import java.util.ArrayList;
  */
 public class BookListFragment extends Fragment {
 
-    private ArrayList<Book> books = new ArrayList<Book>();
+    private List<Book> books = new ArrayList<Book>();
 
     public BookListFragment() {}
 
@@ -32,6 +33,21 @@ public class BookListFragment extends Fragment {
         args.putParcelableArrayList("book_list", bookList.toArrayList());
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void displayList(List<Book> bookList) {
+
+        System.out.println("Running displayList(List<Book> bookList)");
+
+        this.books = bookList;
+
+        // This allows us to use the same fragment multiple times
+        if (!this.isDetached() && getFragmentManager() != null) {
+            getFragmentManager().beginTransaction()
+                    .detach(this)
+                    .attach(this)
+                    .commit();
+        }
     }
 
     @Override
