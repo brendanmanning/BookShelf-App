@@ -13,6 +13,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -21,6 +22,14 @@ import org.json.JSONObject;
 import java.util.function.Function;
 
 public class BookSearchActivity extends AppCompatActivity {
+
+    public static final int BookSearchActivityRequestCode = 1001;
+    public static final int BookSearchActivityCompletedResponseCode = 2001;
+    public static final String BookSearchActivityCompletedDataLocation = "BookSearchActivityCompletedDataLocation";
+
+    private static String hostname = "https://kamorris.com/lab/cis3515/";
+    private static String endpoint = "search.php";
+    private static String search_key = "?term=";
 
     EditText searchEditText;
     Button searchButton;
@@ -43,18 +52,43 @@ public class BookSearchActivity extends AppCompatActivity {
          * BIND UI HANDLERS
          */
         searchButton.setOnClickListener(v -> {
-            BookList.fromSearch(requestQueue, searchEditText.getText().toString(), bookList -> {
-                System.out.println("Got a booklist");
-                System.out.println("First title: " + bookList.get(0).getTitle());
+            // Create a request object with callbacks attatched
+            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                    makeURL(searchEditText.getText().toString()),
+                    response -> {
+                        System.out.println("In JsonArrayRequest.success callback");
+                        System.out.println(response);
 
-                Intent intentData = new Intent();
-                intentData.putExtra("val", bookList.toArrayList());
-                setResult(456, intentData);
+                        BookList list = new BookList(response);
 
-                return null;
-            });
+                        System.out.println("Created list with size " + list.size());
+
+                        // Create an intent to transfer data
+                        Intent intentData = new Intent();
+                        intentData.putParcelableArrayListExtra(BookSearchActivity.BookSearchActivityCompletedDataLocation, list.toArrayList());
+                        setResult(BookSearchActivity.BookSearchActivityCompletedResponseCode, intentData);
+
+                        // Close activity here
+                        finish();
+                    },
+                    error -> {
+                        System.out.println("In JsonArrayRequest.error callback");
+                        System.out.println(error.toString());
+                        error.printStackTrace();
+                    }
+            );
+            requestQueue.add(jsonArrayRequest);
             requestQueue.start();
         });
 
+    }
+
+    private String makeURL(String query) {
+        // Create a full search URL
+        String url = BookSearchActivity.hostname + BookSearchActivity.endpoint;
+        if(query != null && query.length() > 0) {
+            url += BookSearchActivity.search_key + query;
+        }
+        return url;
     }
 }

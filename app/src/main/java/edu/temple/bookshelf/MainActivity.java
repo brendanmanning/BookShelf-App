@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         // Listen for search button clicks
         searchButton.setOnClickListener(v -> {
             Intent launchSearchIntent = new Intent(this, BookSearchActivity.class);
-            startActivityForResult(launchSearchIntent, 123);
+            startActivityForResult(launchSearchIntent, BookSearchActivity.BookSearchActivityRequestCode);
         });
 
     }
@@ -114,9 +114,14 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 123) {
-            if(resultCode == 456) {
-                List<Book> bookArrayList = data.getParcelableArrayListExtra("val");
+        if(requestCode == BookSearchActivity.BookSearchActivityRequestCode) {
+            System.out.println("Is correct request code");
+            if(resultCode == BookSearchActivity.BookSearchActivityCompletedResponseCode) {
+                System.out.println("Is correct response code");
+                List<Book> bookArrayList = data.getParcelableArrayListExtra(
+                        BookSearchActivity.BookSearchActivityCompletedDataLocation
+                );
+                System.out.println("Got data from BookSearchActivityRequestCode+BookSearchActivityCompletedResponseCode ==> size=" + bookArrayList.size());
                 blf.displayList(bookArrayList);
             }
         }

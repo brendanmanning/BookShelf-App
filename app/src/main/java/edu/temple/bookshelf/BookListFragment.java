@@ -37,7 +37,7 @@ public class BookListFragment extends Fragment {
 
     public void displayList(List<Book> bookList) {
 
-        System.out.println("Running displayList(List<Book> bookList)");
+        System.out.println("Running displayList(List<Book> bookList) -- have " + bookList.size() + " books");
 
         this.books = bookList;
 
@@ -67,12 +67,12 @@ public class BookListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        System.out.println("In BookListFragment.onCreateView()");
+        System.out.println("In BookListFragment.onCreateView() -- have " + this.books.size() + " books");
 
         View view = inflater.inflate(R.layout.fragment_book_list, container, false);
 
         ListView listView = view.findViewById(R.id.fragmentListView);
-        listView.setAdapter(new BookListAdapter(getContext(), android.R.layout.simple_list_item_1, books));
+        listView.setAdapter(new BookListAdapter(getContext(), android.R.layout.simple_list_item_1, this.books));
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             System.out.println("In onItemClick");
             ((ListFragmentInterface) getActivity()).onSelectItem(position, books.get(position));
