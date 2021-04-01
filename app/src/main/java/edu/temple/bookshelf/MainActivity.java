@@ -28,7 +28,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements BookListFragment.BookSelectedInterface {
 
     Book selectedBook;
-    BookList bookList;
+    BookList bookList = new BookList();
 
     private boolean twoPane;
 
@@ -37,21 +37,13 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
     private FragmentManager fm;
 
-    private BookListFragment blf;
+    private BookListFragment blf = BookListFragment.newInstance(bookList);
     private BookDetailsFragment bdf = new BookDetailsFragment();
 
     private Button searchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        // to pudate the book list, use this instead of hte setbooks
-        blf = BookListFragment.newInstance(bookList);
-
-        bookList.clear();
-        bookList.add(somenewbook);
-
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -62,23 +54,9 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         if (savedInstanceState != null)
             selectedBook = savedInstanceState.getParcelable(KEY_SAVED_BOOK);
 
-        /**
-         * BIND LISTENERS TO UI ACTIONS
-         */
+        this.twoPane = findViewById(R.id.fragment2) != null;
 
-        // Listen for search button clicks
-        searchButton.setOnClickListener(v -> {
-            Intent launchSearchIntent = new Intent(this, BookSearchActivity.class);
-            startActivityForResult(launchSearchIntent, BookSearchActivity.BookSearchActivityRequestCode);
-        });
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        boolean twoPane = findViewById(R.id.fragment2) != null;
+        System.out.println("(#1) TWOPANE="+twoPane);
 
         fm = getSupportFragmentManager();
 
@@ -109,11 +87,16 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             BookListFragment with BookDetailsFragment, making the transaction reversible
              */
             fm.beginTransaction()
-                    .replace(R.id.fragment1, bdf)
+                    .replace(R.id.fragment1, bdf) // TODO - maybe .add ?
                     .addToBackStack(null)
                     .commit();
         }
 
+        // Listen for search button clicks
+        searchButton.setOnClickListener(v -> {
+            Intent launchSearchIntent = new Intent(this, BookSearchActivity.class);
+            startActivityForResult(launchSearchIntent, BookSearchActivity.BookSearchActivityRequestCode);
+        });
 
     }
 
@@ -129,15 +112,15 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                 );
                 System.out.println("Got data from BookSearchActivityRequestCode+BookSearchActivityCompletedResponseCode ==> size=" + bl.size());
 
-                updateBookList(bl);
+                bookList.clear();
+                for(int i = 0; i < bl.size(); i++) {
+                    bookList.add(bl.get(i));
+                }
+                blf.refresh();
 
                 if(!twoPane && isShowingBookDetailFragment()) {
                     System.out.println("Are showing BookDetailFragment, will need to popBackStack");
-
                     fm.popBackStack();
-//                    fm.beginTransaction()
-//                            .replace(R.id.fragment1, blf)
-//                            .commit();
                 }
 
             }
@@ -157,8 +140,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     public void bookSelected(int position) {
         //Store the selected book to use later if activity restarts
         selectedBook = bookList.get(position);
-
-        if (twoPane)
+        System.out.println("(#2) TWOPANE="+twoPane);
+        if (this.twoPane)
             /*
             Display selected book using previously attached fragment
              */
@@ -175,23 +158,23 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         }
     }
 
-    public void updateBookList(BookList list) {
-        bookList = list;
-        if(twoPane) {
-            blf.setBooks(list);
-        } else {
-            /*
-            Display books using new fragment
-             */
-            System.out.println("Replacing with new BookListFragment list");
-            blf = BookListFragment.newInstance(bookList);
-            fm.beginTransaction()
-                    .replace(R.id.fragment1, blf)
-                    // Transaction is reversible
-                    //.addToBackStack(null)
-                    .commit();
-        }
-    }
+//    public void updateBookList(BookList list) {
+//        bookList = list;
+//        if(twoPane) {
+//            blf.setBooks(list);
+//        } else {
+//            /*
+//            Display books using new fragment
+//             */
+//            System.out.println("Replacing with new BookListFragment list");
+//            blf = BookListFragment.newInstance(bookList);
+//            fm.beginTransaction()
+//                    .replace(R.id.fragment1, blf)
+//                    // Transaction is reversible
+//                    //.addToBackStack(null)
+//                    .commit();
+//        }
+//    }
 
     private boolean isSinglePane() {
         return findViewById(R.id.fragment2) == null;
