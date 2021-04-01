@@ -54,8 +54,10 @@ public class BookSearchActivity extends AppCompatActivity {
          */
         searchButton.setOnClickListener(v -> {
             // Create a request object with callbacks attatched
+            String url = makeURL(searchEditText.getText().toString());
+            System.out.println("Calling " + url + " ...");
             JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                    makeURL(searchEditText.getText().toString()),
+                    url,
                     response -> {
                         System.out.println("In JsonArrayRequest.success callback");
                         System.out.println(response);
@@ -66,7 +68,8 @@ public class BookSearchActivity extends AppCompatActivity {
                                 list.add(
                                         new Book(
                                                 response.getJSONObject(i).getString("title"),
-                                                response.getJSONObject(i).getString("author")
+                                                response.getJSONObject(i).getString("author"),
+                                                response.getJSONObject(i).getString("cover_url")
                                         )
                                 );
                             } catch (JSONException e) {

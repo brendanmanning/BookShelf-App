@@ -19,9 +19,10 @@ public class Book implements Parcelable {
     }
     public String getCoverURL() { return coverURL; }
 
-    public Book(String title, String author) {
+    public Book(String title, String author, String coverURL) {
         this.title = title;
         this.author = author;
+        this.coverURL = coverURL;
     }
 
     // ------ Parcelable Implementation ------ //
@@ -29,12 +30,14 @@ public class Book implements Parcelable {
     protected Book(Parcel in) {
         title = in.readString();
         author = in.readString();
+        coverURL = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
         dest.writeString(author);
+        dest.writeString(coverURL);
     }
 
     @Override
