@@ -37,13 +37,22 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
     private FragmentManager fm;
 
-    private BookListFragment blf = new BookListFragment();
+    private BookListFragment blf;
     private BookDetailsFragment bdf = new BookDetailsFragment();
 
     private Button searchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // to pudate the book list, use this instead of hte setbooks
+        blf = BookListFragment.newInstance(bookList);
+
+        bookList.clear();
+        bookList.add(somenewbook);
+
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -125,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                 if(!twoPane && isShowingBookDetailFragment()) {
                     System.out.println("Are showing BookDetailFragment, will need to popBackStack");
 
-//                    fm.popBackStack();
+                    fm.popBackStack();
 //                    fm.beginTransaction()
 //                            .replace(R.id.fragment1, blf)
 //                            .commit();

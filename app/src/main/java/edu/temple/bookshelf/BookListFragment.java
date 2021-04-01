@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -21,6 +22,8 @@ public class BookListFragment extends Fragment {
     private BookList books;
 
     BookSelectedInterface parentActivity;
+
+    ListView listView;
 
     public BookListFragment() {}
 
@@ -38,16 +41,8 @@ public class BookListFragment extends Fragment {
         return fragment;
     }
 
-    public void setBooks(BookList list) {
-        this.books = list;
-
-        // This allows us to use the same fragment multiple times
-        if (!this.isDetached() && getFragmentManager() != null) {
-            getFragmentManager().beginTransaction()
-                    .detach(this)
-                    .attach(this)
-                    .commit();
-        }
+    public void refresh() {
+        ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
     }
 
     @Override
@@ -76,7 +71,7 @@ public class BookListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ListView listView = (ListView) inflater.inflate(R.layout.fragment_book_list, container, false);
+        listView = (ListView) inflater.inflate(R.layout.fragment_book_list, container, false);
 
         listView.setAdapter(new BookListAdapter(getContext(), books));
 
