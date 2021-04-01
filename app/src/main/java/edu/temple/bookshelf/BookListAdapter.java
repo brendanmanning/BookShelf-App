@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,20 +15,20 @@ import java.util.List;
 
 
 
-public class BookListAdapter extends ArrayAdapter {
+public class BookListAdapter extends BaseAdapter {
 
     Context context;
-    List<Book> list;
+    BookList list;
 
-    public BookListAdapter(@NonNull Context context, int resource, @NonNull List list) {
-        super(context, resource);
+    public BookListAdapter(@NonNull Context context, @NonNull BookList list) {
+        super();
         this.context = context;
         this.list = list;
     }
 
     @Override
     public int getCount() {
-        return this.list.size();
+        return this.list != null ? this.list.size() : 0;
     }
 
     @Nullable
@@ -37,11 +38,16 @@ public class BookListAdapter extends ArrayAdapter {
         return list.get(position);
     }
 
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        LinearLayout linearLayout = new LinearLayout(getContext());
+        LinearLayout linearLayout = new LinearLayout(this.context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
 

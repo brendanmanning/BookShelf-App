@@ -25,7 +25,12 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements BookListFragment.ListFragmentInterface {
+public class MainActivity extends AppCompatActivity implements BookListFragment.BookSelectedInterface {
+
+    Book selectedBook;
+    BookList bookList;
+
+    private boolean twoPane;
 
     private final String KEY_SAVED_BOOK = "saved_book";
     private int saved_book_index = -1;
@@ -42,62 +47,11 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /**
-         * BASIC SETUP
-         */
-
-        // Bind UI items
         searchButton = findViewById(R.id.searchButton);
 
-        // Determine the presentation view
-        boolean singlePane = findViewById(R.id.fragment2) == null;
-
-        // Get the Fragment manager and access the main fragment
-        fm = getSupportFragmentManager();
-        Fragment frag1 = getSupportFragmentManager().findFragmentById(R.id.fragment1);
-
-        /**
-         * SHOW THE LIST VIEW
-         * via replace or add depending on the context
-         */
-
-        // At this point, I only want to have BookListFragment be displayed in container_1
-        if (frag1 instanceof BookDetailsFragment) {
-            fm.popBackStack();
-        } else if (!(frag1 instanceof BookListFragment)) {
-            fm.beginTransaction()
-                    .add(R.id.fragment1, blf)
-                    .commit();
-        } else if (frag1 instanceof BookListFragment) {
-            fm.beginTransaction()
-                    .replace(R.id.fragment1, blf)
-                    .commit();
-        }
-
-        /**
-         * RESTORE PREVIOUSLY SELECTED ITEM TO DETAIL VIEW
-         */
-
-        // Figure out what the saved book (if there is one) is
-        int restore_book_index = -1;
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(KEY_SAVED_BOOK)) {
-                restore_book_index = savedInstanceState.getInt(KEY_SAVED_BOOK);
-            }
-        }
-
-        // Update the display fragment if there is a previous item
-        if(restore_book_index != -1) {
-            // TODO: - Put this line back
-            // onSelectItem(restore_book_index, books.get(restore_book_index));
-        }
-
-        // The presentation will be different for landscape/large screen modes
-        if (!singlePane) {
-            fm.beginTransaction()
-                    .replace(R.id.fragment2, bdf)
-                    .commit();
-        }
+        //Fetch selected book if there was one
+        if (savedInstanceState != null)
+            selectedBook = savedInstanceState.getParcelable(KEY_SAVED_BOOK);
 
         /**
          * BIND LISTENERS TO UI ACTIONS
@@ -112,17 +66,71 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        boolean twoPane = findViewById(R.id.fragment2) != null;
+
+        fm = getSupportFragmentManager();
+
+        Fragment fragment1;
+        fragment1 = fm.findFragmentById(R.id.fragment1);
+
+
+        // At this point, I only want to have BookListFragment be displayed in container_1
+        if (fragment1 instanceof BookDetailsFragment) {
+            fm.popBackStack();
+        } else if (!(fragment1 instanceof BookListFragment))
+            fm.beginTransaction()
+                    .add(R.id.fragment1, blf) // add books here
+                    .commit();
+
+        /*
+        If we have two containers available, load a single instance
+        of BookDetailsFragment to display all selected books
+         */
+        bdf = (selectedBook == null) ? new BookDetailsFragment() : BookDetailsFragment.newInstance(selectedBook);
+        if (twoPane) {
+            fm.beginTransaction()
+                    .replace(R.id.fragment2, bdf)
+                    .commit();
+        } else if (selectedBook != null) {
+            /*
+            If a book was selected, and we now have a single container, replace
+            BookListFragment with BookDetailsFragment, making the transaction reversible
+             */
+            fm.beginTransaction()
+                    .replace(R.id.fragment1, bdf)
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == BookSearchActivity.BookSearchActivityRequestCode) {
             System.out.println("Is correct request code");
             if(resultCode == BookSearchActivity.BookSearchActivityCompletedResponseCode) {
                 System.out.println("Is correct response code");
-                List<Book> bookArrayList = data.getParcelableArrayListExtra(
+                BookList bl = data.getParcelableExtra(
                         BookSearchActivity.BookSearchActivityCompletedDataLocation
                 );
-                System.out.println("Got data from BookSearchActivityRequestCode+BookSearchActivityCompletedResponseCode ==> size=" + bookArrayList.size());
-                blf.displayList(bookArrayList);
+                System.out.println("Got data from BookSearchActivityRequestCode+BookSearchActivityCompletedResponseCode ==> size=" + bl.size());
+
+                updateBookList(bl);
+
+                if(!twoPane && isShowingBookDetailFragment()) {
+                    System.out.println("Are showing BookDetailFragment, will need to popBackStack");
+
+//                    fm.popBackStack();
+//                    fm.beginTransaction()
+//                            .replace(R.id.fragment1, blf)
+//                            .commit();
+                }
+
             }
         }
     }
@@ -137,24 +145,78 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void onSelectItem(int position, Book book) {
-        System.out.println("In MainActivity.onSelectItem(Book book)");
-        this.saved_book_index = position;
-        bdf.displayBook(book);
-        if(findViewById(R.id.fragment2) == null) {
-            System.out.println("Replacing fragment");
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment1, bdf)
-                    .addToBackStack(null)
-                    .commit();
-        } else {
-            System.out.println("Setting in fragment 2");
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment2, bdf)
+    public void bookSelected(int position) {
+        //Store the selected book to use later if activity restarts
+        selectedBook = bookList.get(position);
+
+        if (twoPane)
+            /*
+            Display selected book using previously attached fragment
+             */
+            bdf.displayBook(selectedBook);
+        else {
+            /*
+            Display book using new fragment
+             */
+            fm.beginTransaction()
+                    .replace(R.id.fragment1, BookDetailsFragment.newInstance(selectedBook))
+                    // Transaction is reversible
                     .addToBackStack(null)
                     .commit();
         }
     }
+
+    public void updateBookList(BookList list) {
+        bookList = list;
+        if(twoPane) {
+            blf.setBooks(list);
+        } else {
+            /*
+            Display books using new fragment
+             */
+            System.out.println("Replacing with new BookListFragment list");
+            blf = BookListFragment.newInstance(bookList);
+            fm.beginTransaction()
+                    .replace(R.id.fragment1, blf)
+                    // Transaction is reversible
+                    //.addToBackStack(null)
+                    .commit();
+        }
+    }
+
+    private boolean isSinglePane() {
+        return findViewById(R.id.fragment2) == null;
+    }
+
+    private boolean isShowingBookListFragment() {
+        if(isSinglePane()) {
+            return getFragments()[0] instanceof BookListFragment;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean isShowingBookDetailFragment() {
+        if(isSinglePane()) {
+            return getFragments()[0] instanceof BookDetailsFragment;
+        } else {
+            return true;
+        }
+    }
+
+    private Fragment[] getFragments() {
+        fm = getSupportFragmentManager();
+        return new Fragment[]{
+            fm.findFragmentById(R.id.fragment1),
+            fm.findFragmentById(R.id.fragment2)
+        };
+    }
+
+    @Override
+    public void onBackPressed() {
+        // If the user hits the back button, clear the selected book
+        selectedBook = null;
+        super.onBackPressed();
+    }
+
 }

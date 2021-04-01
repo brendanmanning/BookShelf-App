@@ -17,6 +17,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.function.Function;
@@ -59,13 +60,25 @@ public class BookSearchActivity extends AppCompatActivity {
                         System.out.println("In JsonArrayRequest.success callback");
                         System.out.println(response);
 
-                        BookList list = new BookList(response);
+                        BookList list = new BookList();
+                        for(int i = 0; i < response.length(); i++) {
+                            try {
+                                list.add(
+                                        new Book(
+                                                response.getJSONObject(i).getString("title"),
+                                                response.getJSONObject(i).getString("author")
+                                        )
+                                );
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
 
                         System.out.println("Created list with size " + list.size());
 
                         // Create an intent to transfer data
                         Intent intentData = new Intent();
-                        intentData.putParcelableArrayListExtra(BookSearchActivity.BookSearchActivityCompletedDataLocation, list.toArrayList());
+                        intentData.putExtra(BookSearchActivity.BookSearchActivityCompletedDataLocation, list);
                         setResult(BookSearchActivity.BookSearchActivityCompletedResponseCode, intentData);
 
                         // Close activity here

@@ -1,5 +1,6 @@
 package edu.temple.bookshelf;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,32 +15,31 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link BookListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class BookListFragment extends Fragment {
 
-    private List<Book> books = new ArrayList<Book>();
+    private static final String BOOK_LIST_KEY = "booklist";
+    private BookList books;
+
+    BookSelectedInterface parentActivity;
 
     public BookListFragment() {}
 
-    public static BookListFragment newInstance(BookList bookList) {
-        System.out.println("ArrayList");
-        System.out.println(bookList.toArrayList());
+    public static BookListFragment newInstance(BookList books) {
         BookListFragment fragment = new BookListFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList("book_list", bookList.toArrayList());
+
+        /*
+         A BookList implements the Parcelable interface
+         therefore we can place a BookList inside a bundle
+         by using that put() method.
+         */
+        args.putParcelable(BOOK_LIST_KEY, books);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public void displayList(List<Book> bookList) {
-
-        System.out.println("Running displayList(List<Book> bookList) -- have " + bookList.size() + " books");
-
-        this.books = bookList;
+    public void setBooks(BookList list) {
+        this.books = list;
 
         // This allows us to use the same fragment multiple times
         if (!this.isDetached() && getFragmentManager() != null) {
@@ -51,43 +51,49 @@ public class BookListFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        /*
+         This fragment needs to communicate with its parent activity
+         so we verify that the activity implemented our defined interface
+         */
+        if (context instanceof BookSelectedInterface) {
+            parentActivity = (BookSelectedInterface) context;
+        } else {
+            throw new RuntimeException("Please implement the required interface(s)");
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            System.out.println("In onCreate in ListFragment");
-            books = getArguments().getParcelableArrayList("book_list");
-            System.out.println("First is: " + books.get(0).getTitle());
-        } else {
-            System.out.println("In onCreate in ListFragment (default)");
-            books = new ArrayList<Book>();
+            books = getArguments().getParcelable(BOOK_LIST_KEY);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ListView listView = (ListView) inflater.inflate(R.layout.fragment_book_list, container, false);
 
-        System.out.println("In BookListFragment.onCreateView() -- have " + this.books.size() + " books");
+        listView.setAdapter(new BookListAdapter(getContext(), books));
 
-        View view = inflater.inflate(R.layout.fragment_book_list, container, false);
-
-        ListView listView = view.findViewById(R.id.fragmentListView);
-        listView.setAdapter(new BookListAdapter(getContext(), android.R.layout.simple_list_item_1, this.books));
-        listView.setOnItemClickListener((parent, view1, position, id) -> {
-            System.out.println("In onItemClick");
-            ((ListFragmentInterface) getActivity()).onSelectItem(position, books.get(position));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                parentActivity.bookSelected(position);
+            }
         });
 
-        return view;
-
+        return listView;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    public interface ListFragmentInterface {
-        void onSelectItem(int index, Book book);
+    /*
+    Interface for communicating with attached activity
+     */
+    interface BookSelectedInterface {
+        void bookSelected(int index);
     }
 }

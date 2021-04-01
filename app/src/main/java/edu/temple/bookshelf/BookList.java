@@ -3,59 +3,50 @@ package edu.temple.bookshelf;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonArrayRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
-public class BookList {
+public class BookList implements Parcelable {
+    private ArrayList<Book> books;
 
-    private ArrayList<Book> list = new ArrayList<Book>();
+    public BookList() {
+        books = new ArrayList<>();
+    }
 
-    public BookList() {}
-    public BookList(Book[] books) {
-        for(Book b : books) {
-            list.add(b);
+    protected BookList(Parcel in) {
+        books = in.createTypedArrayList(Book.CREATOR);
+    }
+
+    public static final Creator<BookList> CREATOR = new Creator<BookList>() {
+        @Override
+        public BookList createFromParcel(Parcel in) {
+            return new BookList(in);
         }
-    }
 
-    public BookList(JSONArray jsonArray) {
-        try {
-            for (int i = 0; i < jsonArray.length(); i++) {
-                System.out.println("    getting jsonArray[" + i + "]");
-                JSONObject bookJson = jsonArray.getJSONObject(i);
-                list.add(new Book(bookJson.getString("title"), bookJson.getString("author")));
-            }
-        } catch (JSONException e) {
-            System.out.println("There was a JSONException");
+        @Override
+        public BookList[] newArray(int size) {
+            return new BookList[size];
         }
+    };
+
+    public void add(Book book) {
+        books.add(book);
     }
 
-    public ArrayList<Book> toArrayList() {
-        return list;
-    }
-
-    public boolean add(Book book) {
-        return list.add(book);
-    }
-
-    public boolean remove(Book book) {
-        return list.remove(book);
-    }
-
-    public Book get(int index) {
-        return list.get(index);
+    public Book get(int position) {
+        return books.get(position);
     }
 
     public int size() {
-        return list.size();
+        return books.size();
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeTypedList(books);
+    }
 }
