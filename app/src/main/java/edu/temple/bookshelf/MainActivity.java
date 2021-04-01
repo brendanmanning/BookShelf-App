@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
     private boolean twoPane;
 
+    private final String KEY_SAVED_BOOKS = "saved_books";
     private final String KEY_SAVED_BOOK = "saved_book";
     private int saved_book_index = -1;
 
@@ -51,8 +52,14 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         searchButton = findViewById(R.id.searchButton);
 
         //Fetch selected book if there was one
-        if (savedInstanceState != null)
-            selectedBook = savedInstanceState.getParcelable(KEY_SAVED_BOOK);
+        if (savedInstanceState != null) {
+            this.bookList = savedInstanceState.getParcelable(KEY_SAVED_BOOKS);
+
+            int selectedBookIndex = savedInstanceState.getInt(KEY_SAVED_BOOK);
+            if (selectedBookIndex >= 0 ) {
+                this.selectedBook = this.bookList.get(selectedBookIndex);
+            }
+        }
 
         this.twoPane = findViewById(R.id.fragment2) != null;
 
@@ -62,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
         Fragment fragment1;
         fragment1 = fm.findFragmentById(R.id.fragment1);
-
 
         // At this point, I only want to have BookListFragment be displayed in container_1
         if (fragment1 instanceof BookDetailsFragment) {
@@ -76,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         If we have two containers available, load a single instance
         of BookDetailsFragment to display all selected books
          */
-        bdf = (selectedBook == null) ? new BookDetailsFragment() : BookDetailsFragment.newInstance(selectedBook);
+
         if (twoPane) {
             fm.beginTransaction()
                     .replace(R.id.fragment2, bdf)
@@ -90,6 +96,11 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     .replace(R.id.fragment1, bdf) // TODO - maybe .add ?
                     .addToBackStack(null)
                     .commit();
+        }
+
+        if(selectedBook != null) {
+            System.out.println("Trying to show the saved book...");
+            bdf.displayBook(this.selectedBook);
         }
 
         // Listen for search button clicks
@@ -130,6 +141,12 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
 
+        System.out.println("Saving book list: KEY_SAVED_BOOKS=" + this.bookList.toString());
+        System.out.println("Saving book index: KEY_SAVED_BOOK=" + this.saved_book_index);
+
+        // Put the current BookList into the bundle
+        savedInstanceState.putParcelable(KEY_SAVED_BOOKS, this.bookList);
+
         // Put the current saved book index into the bundle
         savedInstanceState.putInt(KEY_SAVED_BOOK, this.saved_book_index);
 
@@ -140,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     public void bookSelected(int position) {
         //Store the selected book to use later if activity restarts
         selectedBook = bookList.get(position);
+        this.saved_book_index = position;
         System.out.println("(#2) TWOPANE="+twoPane);
         if (this.twoPane)
             /*

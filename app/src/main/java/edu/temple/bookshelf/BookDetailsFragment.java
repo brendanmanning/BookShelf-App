@@ -25,6 +25,10 @@ public class BookDetailsFragment extends Fragment {
     private String bookTitle;
     private String bookAuthor;
 
+    View view;
+    TextView titleTextView;
+    TextView authorTextView;
+
     public BookDetailsFragment() {
         // Required empty public constructor
     }
@@ -34,13 +38,11 @@ public class BookDetailsFragment extends Fragment {
         this.bookTitle = book.getTitle();
         this.bookAuthor = book.getAuthor();
 
-        // This allows us to use the same fragment multiple times
-        if (!this.isDetached() && getFragmentManager() != null) {
-            getFragmentManager().beginTransaction()
-                    .detach(this)
-                    .attach(this)
-                    .commit();
+        if( titleTextView != null && authorTextView != null ) {
+            titleTextView.setText(this.bookTitle);
+            authorTextView.setText(this.bookAuthor);
         }
+
     }
 
     public static BookDetailsFragment newInstance(Book book) {
@@ -70,15 +72,15 @@ public class BookDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_book_details, container, false);
+        this.view = inflater.inflate(R.layout.fragment_book_details, container, false);
 
-        TextView titleTextView = (TextView) view.findViewById(R.id.bookDetailTitleTextView);
-        TextView authorTextView = (TextView) view.findViewById(R.id.bookDetailAuthorTextView);
+        this.titleTextView = (TextView) view.findViewById(R.id.bookDetailTitleTextView);
+        this.authorTextView = (TextView) view.findViewById(R.id.bookDetailAuthorTextView);
 
-        titleTextView.setText(this.bookTitle);
-        authorTextView.setText(this.bookAuthor);
+        this.titleTextView.setText(this.bookTitle);
+        this.authorTextView.setText(this.bookAuthor);
 
-        return view;
+        return this.view;
     }
 
     @Override
