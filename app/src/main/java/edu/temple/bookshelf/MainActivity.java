@@ -46,37 +46,40 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        this.twoPane = findViewById(R.id.fragment2) != null;
         searchButton = findViewById(R.id.searchButton);
 
-        //Fetch selected book if there was one
-        if (savedInstanceState != null) {
-            this.bookList = savedInstanceState.getParcelable(KEY_SAVED_BOOKS);
-
-            int selectedBookIndex = savedInstanceState.getInt(KEY_SAVED_BOOK);
-            if (selectedBookIndex >= 0 ) {
-                this.selectedBook = this.bookList.get(selectedBookIndex);
-            }
-        }
-
-        this.twoPane = findViewById(R.id.fragment2) != null;
-
-        System.out.println("(#1) TWOPANE="+twoPane);
-
         fm = getSupportFragmentManager();
-
         Fragment fragment1;
         fragment1 = fm.findFragmentById(R.id.fragment1);
 
+        //Fetch selected book if there was one
+        if (savedInstanceState != null) {
+
+            if(savedInstanceState.containsKey(KEY_SAVED_BOOKS)) {
+                this.bookList = savedInstanceState.getParcelable(KEY_SAVED_BOOKS);
+            }
+
+            if(savedInstanceState.containsKey(KEY_SAVED_BOOK)) {
+                int selectedBookIndex = savedInstanceState.getInt(KEY_SAVED_BOOK);
+                if (selectedBookIndex >= 0) {
+                    this.selectedBook = this.bookList.get(selectedBookIndex);
+                }
+            }
+        }
+
         // At this point, I only want to have BookListFragment be displayed in container_1
         if (fragment1 instanceof BookDetailsFragment) {
+            System.out.println("#1 - Fragment1 was a BookDetailsFragment");
             fm.popBackStack();
         } else if (!(fragment1 instanceof BookListFragment))
-            fm.beginTransaction()
-                    .add(R.id.fragment1, blf) // add books here
-                    .commit();
+            System.out.println("#2 - Fragment1 was otherwise not a BookListFragment");
+            fm.beginTransaction().add(R.id.fragment1, blf).commit();
 
         /*
         If we have two containers available, load a single instance
@@ -84,22 +87,15 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
          */
 
         if (twoPane) {
-            fm.beginTransaction()
-                    .replace(R.id.fragment2, bdf)
-                    .commit();
+            System.out.println("#3 - Set detail view for 2-pane");
+            fm.beginTransaction().replace(R.id.fragment2, bdf).commit();
         } else if (selectedBook != null) {
-            /*
-            If a book was selected, and we now have a single container, replace
-            BookListFragment with BookDetailsFragment, making the transaction reversible
-             */
-            fm.beginTransaction()
-                    .replace(R.id.fragment1, bdf) // TODO - maybe .add ?
-                    .addToBackStack(null)
-                    .commit();
+            System.out.println("#4 - 1-pane mode WITH a saved book");
+            fm.beginTransaction().replace(R.id.fragment1, bdf).addToBackStack(null).commit();  // switch back to replace
         }
 
         if(selectedBook != null) {
-            System.out.println("Trying to show the saved book...");
+            System.out.println("#5 - Actually updating the saved book");
             bdf.displayBook(this.selectedBook);
         }
 
@@ -109,15 +105,15 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             startActivityForResult(launchSearchIntent, BookSearchActivity.BookSearchActivityRequestCode);
         });
 
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == BookSearchActivity.BookSearchActivityRequestCode) {
-            System.out.println("Is correct request code");
             if(resultCode == BookSearchActivity.BookSearchActivityCompletedResponseCode) {
-                System.out.println("Is correct response code");
                 BookList bl = data.getParcelableExtra(
                         BookSearchActivity.BookSearchActivityCompletedDataLocation
                 );
@@ -130,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                 blf.refresh();
 
                 if(!twoPane && isShowingBookDetailFragment()) {
-                    System.out.println("Are showing BookDetailFragment, will need to popBackStack");
                     fm.popBackStack();
                 }
 
@@ -158,48 +153,17 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         //Store the selected book to use later if activity restarts
         selectedBook = bookList.get(position);
         this.saved_book_index = position;
-        System.out.println("(#2) TWOPANE="+twoPane);
+
         if (this.twoPane)
-            /*
-            Display selected book using previously attached fragment
-             */
             bdf.displayBook(selectedBook);
         else {
-            /*
-            Display book using new fragment
-             */
-            fm.beginTransaction()
-                    .replace(R.id.fragment1, BookDetailsFragment.newInstance(selectedBook))
-                    // Transaction is reversible
-                    .addToBackStack(null)
-                    .commit();
+            fm.beginTransaction().replace(R.id.fragment1, BookDetailsFragment.newInstance(selectedBook)).addToBackStack(null).commit();
         }
     }
 
-//    public void updateBookList(BookList list) {
-//        bookList = list;
-//        if(twoPane) {
-//            blf.setBooks(list);
-//        } else {
-//            /*
-//            Display books using new fragment
-//             */
-//            System.out.println("Replacing with new BookListFragment list");
-//            blf = BookListFragment.newInstance(bookList);
-//            fm.beginTransaction()
-//                    .replace(R.id.fragment1, blf)
-//                    // Transaction is reversible
-//                    //.addToBackStack(null)
-//                    .commit();
-//        }
-//    }
-
-    private boolean isSinglePane() {
-        return findViewById(R.id.fragment2) == null;
-    }
 
     private boolean isShowingBookListFragment() {
-        if(isSinglePane()) {
+        if(!twoPane) {
             return getFragments()[0] instanceof BookListFragment;
         } else {
             return true;
@@ -207,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     }
 
     private boolean isShowingBookDetailFragment() {
-        if(isSinglePane()) {
+        if(!twoPane) {
             return getFragments()[0] instanceof BookDetailsFragment;
         } else {
             return true;

@@ -42,7 +42,8 @@ public class BookListFragment extends Fragment {
     }
 
     public void refresh() {
-        ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+        //if(listView != null && listView.getAdapter() != null)
+            ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
     }
 
     @Override
