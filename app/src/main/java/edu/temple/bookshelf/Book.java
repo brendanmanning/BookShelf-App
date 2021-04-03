@@ -19,7 +19,8 @@ public class Book implements Parcelable {
     }
     public String getCoverURL() { return coverURL; }
 
-    public Book(String title, String author, String coverURL) {
+    public Book(int id, String title, String author, String coverURL) {
+        this.id = id;
         this.title = title;
         this.author = author;
         this.coverURL = coverURL;

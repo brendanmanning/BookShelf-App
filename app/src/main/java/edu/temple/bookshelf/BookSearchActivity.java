@@ -67,6 +67,7 @@ public class BookSearchActivity extends AppCompatActivity {
                             try {
                                 list.add(
                                         new Book(
+                                                Integer.parseInt(response.getJSONObject(i).getString("id")),
                                                 response.getJSONObject(i).getString("title"),
                                                 response.getJSONObject(i).getString("author"),
                                                 response.getJSONObject(i).getString("cover_url")
