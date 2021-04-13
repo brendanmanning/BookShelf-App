@@ -10,12 +10,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-public class MainActivity extends AppCompatActivity implements BookListFragment.BookSelectedInterface {
+import edu.temple.audiobookplayer.AudiobookService;
+
+public class MainActivity
+        extends AppCompatActivity
+        implements BookListFragment.BookSelectedInterface, ControlFragment.ControlFragmentInterface {
 
     FragmentManager fm;
 
-    boolean twoPane;
+    ControlFragment controlFragment;
     BookDetailsFragment bookDetailsFragment;
+
+    boolean twoPane;
     Book selectedBook;
 
     private final String TAG_BOOKLIST = "booklist", TAG_BOOKDETAILS = "bookdetails";
@@ -87,15 +93,49 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         // ************************************************* //
         // Begin code for the audiobook controller component
         // ************************************************* //
-        Fragment controller_fragment = fm.findFragmentById(R.id.controller_container);
-        if(!(controller_fragment instanceof ControlFragment)) {
+        Fragment controlFragment = fm.findFragmentById(R.id.controller_container);
+        if(!(controlFragment instanceof ControlFragment)) {
             fm.beginTransaction()
                     .replace(R.id.controller_container, new ControlFragment(), "TAG_CONTROLLER")
                     .commit();
         }
 
 
+
     }
+
+    // ************************************************* //
+    // Begin code for the audiobook controller component
+    // ************************************************* //
+
+    public void playBook(Book book) {
+
+    }
+
+    @Override
+    public void onPlayButtonPressed() {
+
+    }
+
+    @Override
+    public void onPauseButtonPressed() {
+
+    }
+
+    @Override
+    public void onStopButtonPressed() {
+
+    }
+
+    @Override
+    public void onSeekTo(double location) {
+
+    }
+
+    // ************************************************* //
+    // End code for the audiobook controller component
+    // ************************************************* //
+
 
     @Override
     public void bookSelected(int index) {
@@ -156,4 +196,5 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             showNewBooks();
         }
     }
+
 }

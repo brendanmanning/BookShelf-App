@@ -7,6 +7,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,50 +21,67 @@ import android.view.ViewGroup;
  */
 public class ControlFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String BOOK_KEY = "book";
+    private Book book;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    TextView labelTextView;
+    Button playButton, pauseButton, stopButton;
+    SeekBar seekBar;
 
     public ControlFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ControlFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ControlFragment newInstance(String param1, String param2) {
-        ControlFragment fragment = new ControlFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+//    public static ControlFragment newInstance(Book book) {
+//        ControlFragment fragment = new ControlFragment();
+//        Bundle args = new Bundle();
+//        args.putParcelable(BOOK_KEY, book);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            book = getArguments().getParcelable(BOOK_KEY);
         }
+    }
+
+    public void playBook(Book book) {
+        labelTextView.setText("Now playing: " + book.getTitle());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_control, container, false);
+        View v = inflater.inflate(R.layout.fragment_control, container, false);
+
+        labelTextView = v.findViewById(R.id.control_fragment_label);
+        playButton = v.findViewById(R.id.control_fragment_play_button);
+        pauseButton = v.findViewById(R.id.control_fragment_pause_button);
+        stopButton = v.findViewById(R.id.control_fragment_stop_button);
+        seekBar = v.findViewById(R.id.control_fragment_seekbar);
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        return v;
     }
+
+    /*
+      Interface for communicating with attached activity
+     */
+    interface ControlFragmentInterface {
+        void onPlayButtonPressed();
+        void onPauseButtonPressed();
+        void onStopButtonPressed();
+        void onSeekTo(double location);
+    }
+
 }

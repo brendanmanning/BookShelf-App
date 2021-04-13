@@ -11,7 +11,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/control_fragment_label"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:text="TextView"
@@ -23,21 +23,21 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/control_fragment_play_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="PLAY" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/control_fragment_pause_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="PAUSE" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/control_fragment_stop_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -45,7 +45,7 @@
         </LinearLayout>
 
         <SeekBar
-            android:id="@+id/seekBar"
+            android:id="@+id/control_fragment_seekbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
