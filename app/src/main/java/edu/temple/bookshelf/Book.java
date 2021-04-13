@@ -5,58 +5,80 @@ import android.os.Parcelable;
 
 public class Book implements Parcelable {
 
-    // ------ Getters and Setters ------ //
     private int id;
-    private int duration;
     private String title;
     private String author;
-    private String coverURL;
+    private String coverUrl;
+
+    public Book(int id, String title, String author, String coverUrl) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.coverUrl = coverUrl;
+    }
+
+    protected Book(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        author = in.readString();
+        coverUrl = in.readString();
+    }
+
+    public static final Creator<com.brendanmanning.bookshelf.Book> CREATOR = new Creator<com.brendanmanning.bookshelf.Book>() {
+        @Override
+        public com.brendanmanning.bookshelf.Book createFromParcel(Parcel in) {
+            return new com.brendanmanning.bookshelf.Book(in);
+        }
+
+        @Override
+        public com.brendanmanning.bookshelf.Book[] newArray(int size) {
+            return new com.brendanmanning.bookshelf.Book[size];
+        }
+    };
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getAuthor() {
         return author;
     }
-    public String getCoverURL() { return coverURL; }
 
-    public Book(int id, String title, String author, String coverURL) {
-        this.id = id;
-        this.title = title;
+    public void setAuthor(String author) {
         this.author = author;
-        this.coverURL = coverURL;
     }
 
-    // ------ Parcelable Implementation ------ //
-
-    protected Book(Parcel in) {
-        title = in.readString();
-        author = in.readString();
-        coverURL = in.readString();
+    public String getCoverUrl() {
+        return coverUrl;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(author);
-        dest.writeString(coverURL);
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
     }
+
 
     @Override
     public int describeContents() {
         return 0;
     }
 
-    public static final Creator<Book> CREATOR = new Creator<Book>() {
-        @Override
-        public Book createFromParcel(Parcel in) {
-            return new Book(in);
-        }
-
-        @Override
-        public Book[] newArray(int size) {
-            return new Book[size];
-        }
-    };
-
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(title);
+        parcel.writeString(author);
+        parcel.writeString(coverUrl);
+    }
 }

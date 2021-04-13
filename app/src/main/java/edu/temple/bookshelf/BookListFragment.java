@@ -2,19 +2,14 @@ package edu.temple.bookshelf;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-import java.util.List;
+import androidx.fragment.app.Fragment;
 
 public class BookListFragment extends Fragment {
 
@@ -22,13 +17,12 @@ public class BookListFragment extends Fragment {
     private BookList books;
 
     BookSelectedInterface parentActivity;
-
     ListView listView;
 
     public BookListFragment() {}
 
-    public static BookListFragment newInstance(BookList books) {
-        BookListFragment fragment = new BookListFragment();
+    public static com.brendanmanning.bookshelf.BookListFragment newInstance(BookList books) {
+        com.brendanmanning.bookshelf.BookListFragment fragment = new com.brendanmanning.bookshelf.BookListFragment();
         Bundle args = new Bundle();
 
         /*
@@ -39,11 +33,6 @@ public class BookListFragment extends Fragment {
         args.putParcelable(BOOK_LIST_KEY, books);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public void refresh() {
-        //if(listView != null && listView.getAdapter() != null)
-            ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
     }
 
     @Override
@@ -74,7 +63,7 @@ public class BookListFragment extends Fragment {
                              Bundle savedInstanceState) {
         listView = (ListView) inflater.inflate(R.layout.fragment_book_list, container, false);
 
-        listView.setAdapter(new BookListAdapter(getContext(), books));
+        listView.setAdapter(new com.brendanmanning.bookshelf.BooksAdapter(getContext(), books));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -85,6 +74,11 @@ public class BookListFragment extends Fragment {
 
         return listView;
     }
+
+    public void showNewBooks() {
+        ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+    }
+
 
     /*
     Interface for communicating with attached activity
