@@ -21,8 +21,8 @@ public class BookDetailsFragment extends Fragment {
 
     public BookDetailsFragment() {}
 
-    public static com.brendanmanning.bookshelf.BookDetailsFragment newInstance(Book book) {
-        com.brendanmanning.bookshelf.BookDetailsFragment fragment = new com.brendanmanning.bookshelf.BookDetailsFragment();
+    public static BookDetailsFragment newInstance(Book book) {
+        BookDetailsFragment fragment = new BookDetailsFragment();
         Bundle args = new Bundle();
 
         /*

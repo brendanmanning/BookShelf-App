@@ -21,8 +21,8 @@ public class BookListFragment extends Fragment {
 
     public BookListFragment() {}
 
-    public static com.brendanmanning.bookshelf.BookListFragment newInstance(BookList books) {
-        com.brendanmanning.bookshelf.BookListFragment fragment = new com.brendanmanning.bookshelf.BookListFragment();
+    public static BookListFragment newInstance(BookList books) {
+        BookListFragment fragment = new BookListFragment();
         Bundle args = new Bundle();
 
         /*
@@ -63,7 +63,7 @@ public class BookListFragment extends Fragment {
                              Bundle savedInstanceState) {
         listView = (ListView) inflater.inflate(R.layout.fragment_book_list, container, false);
 
-        listView.setAdapter(new com.brendanmanning.bookshelf.BooksAdapter(getContext(), books));
+        listView.setAdapter(new BooksAdapter(getContext(), books));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

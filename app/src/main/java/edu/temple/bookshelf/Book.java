@@ -24,15 +24,15 @@ public class Book implements Parcelable {
         coverUrl = in.readString();
     }
 
-    public static final Creator<com.brendanmanning.bookshelf.Book> CREATOR = new Creator<com.brendanmanning.bookshelf.Book>() {
+    public static final Creator<Book> CREATOR = new Creator<Book>() {
         @Override
-        public com.brendanmanning.bookshelf.Book createFromParcel(Parcel in) {
-            return new com.brendanmanning.bookshelf.Book(in);
+        public Book createFromParcel(Parcel in) {
+            return new Book(in);
         }
 
         @Override
-        public com.brendanmanning.bookshelf.Book[] newArray(int size) {
-            return new com.brendanmanning.bookshelf.Book[size];
+        public Book[] newArray(int size) {
+            return new Book[size];
         }
     };
 
