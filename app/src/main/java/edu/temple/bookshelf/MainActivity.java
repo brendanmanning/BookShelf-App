@@ -84,6 +84,17 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                     .commit();
         }
 
+        // ************************************************* //
+        // Begin code for the audiobook controller component
+        // ************************************************* //
+        Fragment controller_fragment = fm.findFragmentById(R.id.controller_container);
+        if(!(controller_fragment instanceof ControlFragment)) {
+            fm.beginTransaction()
+                    .replace(R.id.controller_container, new ControlFragment(), "TAG_CONTROLLER")
+                    .commit();
+        }
+
+
     }
 
     @Override

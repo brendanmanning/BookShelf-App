@@ -5,9 +5,23 @@ Creating a layout that gets included in multiple other layouts
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+    <FrameLayout
+        android:id="@+id/controller_container"
+        android:layout_width="250dp"
+        android:layout_height="106dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/container2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchDialogButton">
+
+    </FrameLayout>
 
     <ImageButton
         android:id="@+id/searchDialogButton"
@@ -22,14 +36,12 @@ Creating a layout that gets included in multiple other layouts
 
     <FrameLayout
         android:id="@+id/container_1"
-        android:layout_width="250dp"
-        android:layout_height="0dp"
+        android:layout_width="251dp"
+        android:layout_height="527dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchDialogButton">
+        app:layout_constraintStart_toStartOf="parent">
 
     </FrameLayout>
 
