@@ -7,6 +7,7 @@ public class Book implements Parcelable {
 
     // ------ Getters and Setters ------ //
     private int id;
+    private int duration;
     private String title;
     private String author;
     private String coverURL;
