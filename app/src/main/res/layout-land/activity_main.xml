@@ -1,47 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="0dp"
+    <include
+        layout="@layout/base_two_pane_layout"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/searchButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="#E1E5E8"
-            android:gravity="center"
-            android:textColor="#FFFFFF"
-            app:icon="@android:drawable/ic_menu_search"
-            app:iconGravity="textStart"
-            app:iconTint="#673AB7"
-            app:layout_constraintBottom_toTopOf="@+id/fragment1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <FrameLayout
-            android:id="@+id/fragment1"
-            android:name="edu.temple.bookshelf.BookListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </FrameLayout>
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/fragment2"
-        android:name="edu.temple.bookshelf.BookDetailsFragment"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2" />
-</LinearLayout>
+        tools:layout_editor_absoluteX="352dp"
+        tools:layout_editor_absoluteY="155dp" />
+</FrameLayout>

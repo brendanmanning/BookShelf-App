@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">BookShelf</string>
 
-    <!-- activity_book_search -->
-    <string name="activity_book_search_searchbar_input_text_hint">Book title or partial query</string>
-    <string name="activity_book_search_searchbar_button_title">Search</string>
-
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_error_message">There was an error in your search. Please try again later</string>
+    <string name="error_no_results">No books matched your search</string>
+    <string name="form_search">Search</string>
+    <string name="form_cancel">Cancel</string>
 </resources>
