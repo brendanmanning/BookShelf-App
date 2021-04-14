@@ -67,7 +67,11 @@ public class ControlFragment extends Fragment {
     }
 
     public void playBook(Book book) {
-        labelTextView.setText(book != null ? "Now playing: " + book.getTitle() : "Pick a song");
+        labelTextView.setText(
+            book != null
+                ? getString(R.string.control_fragment_something_playing_label_prefix) + book.getTitle()
+                : getString(R.string.control_fragment_nothing_playing_label)
+        );
     }
 
     @Override
@@ -85,20 +89,23 @@ public class ControlFragment extends Fragment {
         playButton.setOnClickListener(v -> parent.onPlayButtonPressed());
         pauseButton.setOnClickListener(v -> parent.onPauseButtonPressed());
         stopButton.setOnClickListener(v -> parent.onStopButtonPressed());
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                parent.onSeekTo(progress);
+                if(fromUser) {
+                    parent.onSeekTo(progress);
+                }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                // parent.onSeekStart();
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                // parent.onSeekEnd();
             }
         });
 
@@ -113,6 +120,8 @@ public class ControlFragment extends Fragment {
         void onPauseButtonPressed();
         void onStopButtonPressed();
         void onSeekTo(int location);
+        // void onSeekStart();
+        // void onSeekEnd();
     }
 
 }

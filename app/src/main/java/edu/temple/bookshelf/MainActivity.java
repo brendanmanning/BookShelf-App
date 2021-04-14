@@ -24,6 +24,7 @@ public class MainActivity
 
     boolean is_paused = false;
     int current_track_position = 0;
+    int current_track_duration = 0;
 
     FragmentManager fm;
 
@@ -51,12 +52,11 @@ public class MainActivity
             AudiobookService.BookProgress progress = ((AudiobookService.BookProgress) msg.obj);
             if(progress != null) {
                 current_track_position = progress.getProgress();
-
-                System.out.print("Progress: " + progress.getProgress() + " / " + selectedBook.getDuration());
-                double decimal_progress = (double) progress.getProgress() / (double) selectedBook.getDuration();
-                int rounded_progress = (int) (decimal_progress * 100);
-                System.out.print("  decimal_progress=" + decimal_progress + ", rounded_progress=" + rounded_progress);
-                controlFragment.updateProgress(rounded_progress);
+                controlFragment.updateProgress(
+                    calculateSeekBarDisplayProgress(
+                        progress.getProgress(), selectedBook
+                    )
+                );
                 return true;
             } else {
                 System.out.println("Skipping progress update...");
@@ -157,6 +157,7 @@ public class MainActivity
     // Begin code for the audiobook controller component
     // ************************************************* //
 
+    // Interface methods
 
     @Override
     public void onPlayButtonPressed() {
@@ -164,6 +165,7 @@ public class MainActivity
         // Don't play anything if there's no selected book
         if(selectedBook == null) return;
 
+        current_track_duration = selectedBook.getDuration();
         controlFragment.playBook(selectedBook);
 
         // If we're in the middle of the book, play basically means un-pause
@@ -185,14 +187,32 @@ public class MainActivity
     @Override
     public void onStopButtonPressed() {
         binder.stop();
+
         current_track_position = 0;
         controlFragment.updateProgress(0);
         controlFragment.playBook(null);
+
+        current_track_duration = 0;
     }
 
     @Override
     public void onSeekTo(int location) {
-        //binder.seekTo(location);
+        System.out.println("Trying to seek to " + location);
+        binder.seekTo((int) (((double) location/100) * selectedBook.getDuration()));
+//        controlFragment.updateProgress(
+//            calculateSeekBarDisplayProgress(
+//                location,
+//                selectedBook
+//            )
+//        );
+//        current_track_position = location;
+    }
+
+    // Utility methods
+    private int calculateSeekBarDisplayProgress(int seconds, Book book) {
+        double decimal_progress = (double) seconds / (double) selectedBook.getDuration();
+        int rounded_progress = (int) (decimal_progress * 100);
+        return rounded_progress;
     }
 
     // ************************************************* //

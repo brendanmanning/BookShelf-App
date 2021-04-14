@@ -47,7 +47,9 @@
         <SeekBar
             android:id="@+id/control_fragment_seekbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="90" />
     </LinearLayout>
 
 </FrameLayout>
