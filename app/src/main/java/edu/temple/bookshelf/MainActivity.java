@@ -50,18 +50,19 @@ public class MainActivity
         @Override
         public boolean handleMessage(@NonNull Message msg) {
             AudiobookService.BookProgress progress = ((AudiobookService.BookProgress) msg.obj);
-            if(progress != null) {
-                current_track_position = progress.getProgress();
-                controlFragment.updateProgress(
-                    calculateSeekBarDisplayProgress(
-                        progress.getProgress(), selectedBook
-                    )
-                );
-                return true;
-            } else {
-                System.out.println("Skipping progress update...");
-            }
-            return false;
+
+            if(progress == null) return false;
+            if(controlFragment == null) return false;
+
+            current_track_position = progress.getProgress();
+            controlFragment.updateProgress(
+                calculateSeekBarDisplayProgress(
+                    progress.getProgress(), selectedBook
+                )
+            );
+
+            return true;
+
         }
     });
 
@@ -163,6 +164,7 @@ public class MainActivity
 
         // Don't play anything if there's no selected book
         if(selectedBook == null) return;
+        if(controlFragment == null) return;
 
         current_track_duration = selectedBook.getDuration();
         controlFragment.playBook(selectedBook);
