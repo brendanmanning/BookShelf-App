@@ -163,9 +163,17 @@ public class MainActivity
 
     @Override
     public void onPlayButtonPressed() {
+
+        // Don't play anything if there's no selected book
+        if(selectedBook == null) return;
+
+        // If we're in the middle of the book, play basically means un-pause
         if(current_track_position > 0) {
             binder.pause();
-        } else {
+        }
+
+        // If we haven't started the book yet, start it now
+        else {
             binder.play(selectedBook.getId());
         }
     }
@@ -179,6 +187,7 @@ public class MainActivity
     public void onStopButtonPressed() {
         binder.stop();
         current_track_position = 0;
+        controlFragment.updateProgress(0);
     }
 
     @Override
