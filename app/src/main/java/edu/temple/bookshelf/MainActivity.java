@@ -22,6 +22,9 @@ public class MainActivity
         extends AppCompatActivity
         implements BookListFragment.BookSelectedInterface, ControlFragment.ControlFragmentInterface {
 
+    boolean is_paused = false;
+    int current_track_position = 0;
+
     FragmentManager fm;
 
     ControlFragment controlFragment;
@@ -47,6 +50,8 @@ public class MainActivity
         public boolean handleMessage(@NonNull Message msg) {
             AudiobookService.BookProgress progress = ((AudiobookService.BookProgress) msg.obj);
             if(progress != null) {
+                current_track_position = progress.getProgress();
+
                 System.out.print("Progress: " + progress.getProgress() + " / " + selectedBook.getDuration());
                 double decimal_progress = (double) progress.getProgress() / (double) selectedBook.getDuration();
                 int rounded_progress = (int) (decimal_progress * 100);
@@ -158,8 +163,11 @@ public class MainActivity
 
     @Override
     public void onPlayButtonPressed() {
-
-        binder.play(selectedBook.getId());
+        if(current_track_position > 0) {
+            binder.pause();
+        } else {
+            binder.play(selectedBook.getId());
+        }
     }
 
     @Override
@@ -170,6 +178,7 @@ public class MainActivity
     @Override
     public void onStopButtonPressed() {
         binder.stop();
+        current_track_position = 0;
     }
 
     @Override
