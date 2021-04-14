@@ -137,13 +137,12 @@ public class MainActivity
         // ************************************************* //
         // Begin code for the audiobook controller component
         // ************************************************* //
-        Fragment checkForControlFragmentFragment = (ControlFragment) fm.findFragmentById(R.id.controller_container);
-        controlFragment = new ControlFragment();
-        //if(!(checkForControlFragmentFragment instanceof ControlFragment)) {
+        if(! (fm.findFragmentById(R.id.controller_container) instanceof ControlFragment)) {
+            controlFragment = new ControlFragment();
             fm.beginTransaction()
-                    .replace(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
+                    .add(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
                     .commit();
-        //}
+        }
 
         System.out.println("Binding service...");
         bindService(
