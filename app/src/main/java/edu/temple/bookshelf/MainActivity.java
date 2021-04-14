@@ -46,9 +46,17 @@ public class MainActivity
         @Override
         public boolean handleMessage(@NonNull Message msg) {
             AudiobookService.BookProgress progress = ((AudiobookService.BookProgress) msg.obj);
-            System.out.println(progress.getProgress());
-            controlFragment.updateProgress(progress.getProgress());
-            return true;
+            if(progress != null) {
+                System.out.print("Progress: " + progress.getProgress() + " / " + selectedBook.getDuration());
+                double decimal_progress = (double) progress.getProgress() / (double) selectedBook.getDuration();
+                int rounded_progress = (int) (decimal_progress * 100);
+                System.out.print("  decimal_progress=" + decimal_progress + ", rounded_progress=" + rounded_progress);
+                controlFragment.updateProgress(rounded_progress);
+                return true;
+            } else {
+                System.out.println("Skipping progress update...");
+            }
+            return false;
         }
     });
 
@@ -150,6 +158,7 @@ public class MainActivity
 
     @Override
     public void onPlayButtonPressed() {
+
         binder.play(selectedBook.getId());
     }
 
@@ -165,7 +174,7 @@ public class MainActivity
 
     @Override
     public void onSeekTo(int location) {
-        binder.seekTo(location);
+        //binder.seekTo(location);
     }
 
     // ************************************************* //

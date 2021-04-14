@@ -61,6 +61,7 @@ public class ControlFragment extends Fragment {
         if(this.seekBar == null) {
             System.out.println("SEEK BAR IS NULL");
         } else {
+            System.out.println(" ==> Setting progress to " + progress);
             this.seekBar.setProgress(progress);
         }
     }

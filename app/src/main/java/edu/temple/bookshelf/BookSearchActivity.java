@@ -24,7 +24,7 @@ public class BookSearchActivity extends AppCompatActivity {
     public static final String BOOKLIST_KEY = "booklist";
 
     // The JSON object fields for a book
-    private final String id = "id", title = "title", author = "author", cover_url = "cover_url";
+    private final String id = "id", duration = "duration", title = "title", author = "author", cover_url = "cover_url";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,7 @@ public class BookSearchActivity extends AppCompatActivity {
         for (int i = 0; i < booksArray.length(); i++) {
             try {
                 tmpBook = booksArray.getJSONObject(i);
-                bookList.add(new Book(tmpBook.getInt(id), tmpBook.getString(title), tmpBook.getString(author), tmpBook.getString(cover_url)));
+                bookList.add(new Book(tmpBook.getInt(id), tmpBook.getInt(duration), tmpBook.getString(title), tmpBook.getString(author), tmpBook.getString(cover_url)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

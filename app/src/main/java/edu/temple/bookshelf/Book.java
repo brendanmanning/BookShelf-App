@@ -6,12 +6,14 @@ import android.os.Parcelable;
 public class Book implements Parcelable {
 
     private int id;
+    private int duration;
     private String title;
     private String author;
     private String coverUrl;
 
-    public Book(int id, String title, String author, String coverUrl) {
+    public Book(int id, int duration, String title, String author, String coverUrl) {
         this.id = id;
+        this.duration = duration;
         this.title = title;
         this.author = author;
         this.coverUrl = coverUrl;
@@ -19,6 +21,7 @@ public class Book implements Parcelable {
 
     protected Book(Parcel in) {
         id = in.readInt();
+        duration = in.readInt();
         title = in.readString();
         author = in.readString();
         coverUrl = in.readString();
@@ -39,6 +42,8 @@ public class Book implements Parcelable {
     public int getId() {
         return id;
     }
+
+    public int getDuration() { return duration; }
 
     public void setId(int id) {
         this.id = id;
@@ -77,6 +82,7 @@ public class Book implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
+        parcel.writeInt(duration);
         parcel.writeString(title);
         parcel.writeString(author);
         parcel.writeString(coverUrl);
