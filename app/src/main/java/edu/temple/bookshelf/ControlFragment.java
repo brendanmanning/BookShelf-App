@@ -67,7 +67,7 @@ public class ControlFragment extends Fragment {
     }
 
     public void playBook(Book book) {
-        labelTextView.setText("Now playing: " + book.getTitle());
+        labelTextView.setText(book != null ? "Now playing: " + book.getTitle() : "Pick a song");
     }
 
     @Override

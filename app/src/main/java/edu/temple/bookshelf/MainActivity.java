@@ -157,15 +157,14 @@ public class MainActivity
     // Begin code for the audiobook controller component
     // ************************************************* //
 
-    public void playBook(Book book) {
-
-    }
 
     @Override
     public void onPlayButtonPressed() {
 
         // Don't play anything if there's no selected book
         if(selectedBook == null) return;
+
+        controlFragment.playBook(selectedBook);
 
         // If we're in the middle of the book, play basically means un-pause
         if(current_track_position > 0) {
@@ -188,6 +187,7 @@ public class MainActivity
         binder.stop();
         current_track_position = 0;
         controlFragment.updateProgress(0);
+        controlFragment.playBook(null);
     }
 
     @Override
