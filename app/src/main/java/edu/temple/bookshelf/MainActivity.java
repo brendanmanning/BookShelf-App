@@ -139,11 +139,11 @@ public class MainActivity
         // ************************************************* //
         Fragment checkForControlFragmentFragment = (ControlFragment) fm.findFragmentById(R.id.controller_container);
         controlFragment = new ControlFragment();
-        if(!(checkForControlFragmentFragment instanceof ControlFragment)) {
+        //if(!(checkForControlFragmentFragment instanceof ControlFragment)) {
             fm.beginTransaction()
                     .replace(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
                     .commit();
-        }
+        //}
 
         System.out.println("Binding service...");
         bindService(
@@ -210,7 +210,7 @@ public class MainActivity
 
     // Utility methods
     private int calculateSeekBarDisplayProgress(int seconds, Book book) {
-        double decimal_progress = (double) seconds / (double) selectedBook.getDuration();
+        double decimal_progress = (double) seconds / (double) book.getDuration();
         int rounded_progress = (int) (decimal_progress * 100);
         return rounded_progress;
     }

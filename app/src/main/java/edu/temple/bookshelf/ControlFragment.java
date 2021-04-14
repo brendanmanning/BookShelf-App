@@ -27,6 +27,7 @@ public class ControlFragment extends Fragment {
     private static final String BOOK_KEY = "book";
     private Book book;
 
+    View view;
     TextView labelTextView;
     Button playButton, pauseButton, stopButton;
     SeekBar seekBar;
@@ -78,7 +79,7 @@ public class ControlFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_control, container, false);
+        view = inflater.inflate(R.layout.fragment_control, container, false);
 
         labelTextView = view.findViewById(R.id.control_fragment_label);
         playButton = view.findViewById(R.id.control_fragment_play_button);
