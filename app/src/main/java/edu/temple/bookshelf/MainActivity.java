@@ -1,10 +1,16 @@
 package edu.temple.bookshelf;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -20,6 +26,31 @@ public class MainActivity
 
     ControlFragment controlFragment;
     BookDetailsFragment bookDetailsFragment;
+
+    AudiobookService.MediaControlBinder binder;
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            System.out.println("ServiceConnection.onServiceConnected()");
+            binder = (AudiobookService.MediaControlBinder) service;
+            binder.setProgressHandler(playerProgressHandler);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            System.out.println("serviceConnection.onServiceDisconnected()");
+        }
+    };
+
+    Handler playerProgressHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(@NonNull Message msg) {
+            AudiobookService.BookProgress progress = ((AudiobookService.BookProgress) msg.obj);
+            System.out.println(progress.getProgress());
+            controlFragment.updateProgress(progress.getProgress());
+            return true;
+        }
+    });
 
     boolean twoPane;
     Book selectedBook;
@@ -93,14 +124,19 @@ public class MainActivity
         // ************************************************* //
         // Begin code for the audiobook controller component
         // ************************************************* //
-        Fragment controlFragment = fm.findFragmentById(R.id.controller_container);
-        if(!(controlFragment instanceof ControlFragment)) {
+        Fragment checkForControlFragmentFragment = (ControlFragment) fm.findFragmentById(R.id.controller_container);
+        controlFragment = new ControlFragment();
+        if(!(checkForControlFragmentFragment instanceof ControlFragment)) {
             fm.beginTransaction()
-                    .replace(R.id.controller_container, new ControlFragment(), "TAG_CONTROLLER")
+                    .replace(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
                     .commit();
         }
 
-
+        System.out.println("Binding service...");
+        bindService(
+            new Intent(MainActivity.this, AudiobookService.class),
+            serviceConnection, BIND_AUTO_CREATE
+        );
 
     }
 
@@ -114,22 +150,22 @@ public class MainActivity
 
     @Override
     public void onPlayButtonPressed() {
-
+        binder.play(selectedBook.getId());
     }
 
     @Override
     public void onPauseButtonPressed() {
-
+        binder.pause();
     }
 
     @Override
     public void onStopButtonPressed() {
-
+        binder.stop();
     }
 
     @Override
-    public void onSeekTo(double location) {
-
+    public void onSeekTo(int location) {
+        binder.seekTo(location);
     }
 
     // ************************************************* //

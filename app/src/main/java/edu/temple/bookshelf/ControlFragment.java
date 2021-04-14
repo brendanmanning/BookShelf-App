@@ -1,5 +1,6 @@
 package edu.temple.bookshelf;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -21,6 +22,8 @@ import com.squareup.picasso.Picasso;
  */
 public class ControlFragment extends Fragment {
 
+    ControlFragmentInterface parent;
+
     private static final String BOOK_KEY = "book";
     private Book book;
 
@@ -41,10 +44,24 @@ public class ControlFragment extends Fragment {
 //    }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        parent = (ControlFragmentInterface) context;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             book = getArguments().getParcelable(BOOK_KEY);
+        }
+    }
+
+    public void updateProgress(int progress) {
+        if(this.seekBar == null) {
+            System.out.println("SEEK BAR IS NULL");
+        } else {
+            this.seekBar.setProgress(progress);
         }
     }
 
@@ -56,22 +73,35 @@ public class ControlFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_control, container, false);
+        View view = inflater.inflate(R.layout.fragment_control, container, false);
 
-        labelTextView = v.findViewById(R.id.control_fragment_label);
-        playButton = v.findViewById(R.id.control_fragment_play_button);
-        pauseButton = v.findViewById(R.id.control_fragment_pause_button);
-        stopButton = v.findViewById(R.id.control_fragment_stop_button);
-        seekBar = v.findViewById(R.id.control_fragment_seekbar);
+        labelTextView = view.findViewById(R.id.control_fragment_label);
+        playButton = view.findViewById(R.id.control_fragment_play_button);
+        pauseButton = view.findViewById(R.id.control_fragment_pause_button);
+        stopButton = view.findViewById(R.id.control_fragment_stop_button);
+        seekBar = view.findViewById(R.id.control_fragment_seekbar);
 
-        playButton.setOnClickListener(new View.OnClickListener() {
+        playButton.setOnClickListener(v -> parent.onPlayButtonPressed());
+        pauseButton.setOnClickListener(v -> parent.onPauseButtonPressed());
+        stopButton.setOnClickListener(v -> parent.onStopButtonPressed());
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                parent.onSeekTo(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
         });
 
-        return v;
+        return view;
     }
 
     /*
@@ -81,7 +111,7 @@ public class ControlFragment extends Fragment {
         void onPlayButtonPressed();
         void onPauseButtonPressed();
         void onStopButtonPressed();
-        void onSeekTo(double location);
+        void onSeekTo(int location);
     }
 
 }
