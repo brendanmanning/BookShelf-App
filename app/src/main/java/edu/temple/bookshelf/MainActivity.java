@@ -51,8 +51,14 @@ public class MainActivity
         public boolean handleMessage(@NonNull Message msg) {
             AudiobookService.BookProgress progress = ((AudiobookService.BookProgress) msg.obj);
 
-            if(progress == null) return false;
-            if(controlFragment == null) return false;
+            if(progress == null) {
+                System.out.println("progress object null");
+                return false;
+            }
+            if(controlFragment == null) {
+                System.out.println("Control fragment null");
+                return false;
+            }
 
             try {
 
@@ -147,6 +153,11 @@ public class MainActivity
             controlFragment = new ControlFragment();
             fm.beginTransaction()
                     .add(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
+                    .commit();
+        } else {
+            controlFragment = new ControlFragment();
+            fm.beginTransaction()
+                    .replace(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
                     .commit();
         }
 
