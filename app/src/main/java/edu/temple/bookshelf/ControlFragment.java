@@ -36,13 +36,13 @@ public class ControlFragment extends Fragment {
         // Required empty public constructor
     }
 
-//    public static ControlFragment newInstance(Book book) {
-//        ControlFragment fragment = new ControlFragment();
-//        Bundle args = new Bundle();
-//        args.putParcelable(BOOK_KEY, book);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    public static ControlFragment newInstance(Book book) {
+        ControlFragment fragment = new ControlFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(BOOK_KEY, book);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -67,12 +67,18 @@ public class ControlFragment extends Fragment {
         }
     }
 
-    public void playBook(Book book) {
-        labelTextView.setText(
-            book != null
+    public void setPlayingBook(Book book) {
+        this.book = book;
+    }
+
+    public void refresh() {
+        labelTextView.setText(getCorrectLabelText());
+    }
+
+    private String getCorrectLabelText() {
+        return this.book != null
                 ? getString(R.string.control_fragment_something_playing_label_prefix) + book.getTitle()
-                : getString(R.string.control_fragment_nothing_playing_label)
-        );
+                : getString(R.string.control_fragment_nothing_playing_label);
     }
 
     @Override
@@ -86,6 +92,8 @@ public class ControlFragment extends Fragment {
         pauseButton = view.findViewById(R.id.control_fragment_pause_button);
         stopButton = view.findViewById(R.id.control_fragment_stop_button);
         seekBar = view.findViewById(R.id.control_fragment_seekbar);
+
+        labelTextView.setText(getCorrectLabelText());
 
         playButton.setOnClickListener(v -> parent.onPlayButtonPressed());
         pauseButton.setOnClickListener(v -> parent.onPauseButtonPressed());

@@ -79,8 +79,10 @@ public class MainActivity
 
     boolean twoPane;
     Book selectedBook;
+    Book playingBook;
 
     private final String TAG_BOOKLIST = "booklist", TAG_BOOKDETAILS = "bookdetails";
+    private final String KEY_PLAYING_BOOK = "playingBook";
     private final String KEY_SELECTED_BOOK = "selectedBook";
     private final String KEY_BOOKLIST = "searchedook";
     private final int BOOK_SEARCH_REQUEST_CODE = 123;
@@ -102,6 +104,7 @@ public class MainActivity
         if (savedInstanceState != null) {
             // Fetch selected book if there was one
             selectedBook = savedInstanceState.getParcelable(KEY_SELECTED_BOOK);
+            playingBook = savedInstanceState.getParcelable(KEY_PLAYING_BOOK);
 
             // Fetch previously searched books if one was previously retrieved
             bookList = savedInstanceState.getParcelable(KEY_BOOKLIST);
@@ -149,13 +152,13 @@ public class MainActivity
         // ************************************************* //
         // Begin code for the audiobook controller component
         // ************************************************* //
+        controlFragment = new ControlFragment();
+        if(playingBook != null) controlFragment.setPlayingBook(playingBook);
         if(! (fm.findFragmentById(R.id.controller_container) instanceof ControlFragment)) {
-            controlFragment = new ControlFragment();
             fm.beginTransaction()
                     .add(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
                     .commit();
         } else {
-            controlFragment = new ControlFragment();
             fm.beginTransaction()
                     .replace(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
                     .commit();
@@ -183,21 +186,27 @@ public class MainActivity
     public void onPlayButtonPressed() {
 
         // Don't play anything if there's no selected book
+        // Skip if there's no control fragment to use
         if(selectedBook == null) return;
         if(controlFragment == null) return;
 
-        current_track_duration = selectedBook.getDuration();
-        controlFragment.playBook(selectedBook);
+        boolean bookChanged = playingBook != null && selectedBook.getId() != playingBook.getId();
 
-        // If we're in the middle of the book, play basically means un-pause
-        if(current_track_position > 0) {
+        // If we're in the middle of the same book, play basically means un-pause
+        if(!bookChanged && current_track_position > 0) {
             binder.pause();
+            return;
         }
 
-        // If we haven't started the book yet, start it now
-        else {
-            binder.play(selectedBook.getId());
-        }
+        // Update the selected book if it changed
+        playingBook = selectedBook;
+
+        // Play the selected book, regardless of whether or not we just updated it
+        binder.stop();
+        binder.play(playingBook.getId());
+        controlFragment.setPlayingBook(playingBook);
+        controlFragment.refresh();
+
     }
 
     @Override
@@ -209,9 +218,12 @@ public class MainActivity
     public void onStopButtonPressed() {
         binder.stop();
 
+        playingBook = null;
+
         current_track_position = 0;
         controlFragment.updateProgress(0);
-        controlFragment.playBook(null);
+        controlFragment.setPlayingBook(null);
+        controlFragment.refresh();
 
         current_track_duration = 0;
     }
@@ -277,6 +289,7 @@ public class MainActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_SELECTED_BOOK, selectedBook);
+        outState.putParcelable(KEY_PLAYING_BOOK, playingBook);
         outState.putParcelable(KEY_BOOKLIST, bookList);
     }
 
