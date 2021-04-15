@@ -54,13 +54,18 @@ public class MainActivity
             if(progress == null) return false;
             if(controlFragment == null) return false;
 
-            current_track_position = progress.getProgress();
-            controlFragment.updateProgress(
-                calculateSeekBarDisplayProgress(
-                    progress.getProgress(), selectedBook
-                )
-            );
+            try {
 
+                current_track_position = progress.getProgress();
+                controlFragment.updateProgress(
+                        calculateSeekBarDisplayProgress(
+                                progress.getProgress(), selectedBook
+                        )
+                );
+
+            } catch (Exception e) {
+                System.out.println("Caught an exception");
+            }
             return true;
 
         }
@@ -145,6 +150,10 @@ public class MainActivity
                     .commit();
         }
 
+        System.out.println("Starting service...");
+        startService(
+            new Intent(this, AudiobookService.class)
+        );
         System.out.println("Binding service...");
         bindService(
             new Intent(MainActivity.this, AudiobookService.class),
