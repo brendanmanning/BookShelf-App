@@ -24,7 +24,6 @@ public class MainActivity
 
     boolean is_paused = false;
     int current_track_position = 0;
-    int current_track_duration = 0;
 
     FragmentManager fm;
 
@@ -83,6 +82,7 @@ public class MainActivity
 
     private final String TAG_BOOKLIST = "booklist", TAG_BOOKDETAILS = "bookdetails";
     private final String KEY_PLAYING_BOOK = "playingBook";
+    private final String KEY_PLAYING_BOOK_LOCATION = "playingBookLocation";
     private final String KEY_SELECTED_BOOK = "selectedBook";
     private final String KEY_BOOKLIST = "searchedook";
     private final int BOOK_SEARCH_REQUEST_CODE = 123;
@@ -105,11 +105,14 @@ public class MainActivity
             // Fetch selected book if there was one
             selectedBook = savedInstanceState.getParcelable(KEY_SELECTED_BOOK);
             playingBook = savedInstanceState.getParcelable(KEY_PLAYING_BOOK);
+            current_track_position = savedInstanceState.getInt(KEY_PLAYING_BOOK_LOCATION);
 
             // Fetch previously searched books if one was previously retrieved
             bookList = savedInstanceState.getParcelable(KEY_BOOKLIST);
-        }else {
-            // Create empty booklist if
+
+        } else {
+            // Create empty booklist if none passed in
+            // Let other values default to 0 or null
             bookList = new BookList();
         }
 
@@ -152,13 +155,31 @@ public class MainActivity
         // ************************************************* //
         // Begin code for the audiobook controller component
         // ************************************************* //
+
+        // Create a new control fragment when we rotate the device
+        // This approach resolves some memory errors
         controlFragment = new ControlFragment();
-        if(playingBook != null) controlFragment.setPlayingBook(playingBook);
+
+        // If we're playing a book, make sure the ControlFragment
+        // correctly reflects the book's state
+        if(playingBook != null) {
+            controlFragment.setPlayingBook(playingBook);
+            controlFragment.updateProgress(
+                calculateSeekBarDisplayProgress(current_track_position, playingBook)
+            );
+        }
+
+        // Add the control fragment if it doesn't already exist
         if(! (fm.findFragmentById(R.id.controller_container) instanceof ControlFragment)) {
             fm.beginTransaction()
                     .add(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
                     .commit();
-        } else {
+        }
+
+        // Otherwise, replace it
+        // (I know the TA said she didn't think we needed to use .replace(), but this was the
+        //  only way to get it to not duplicate the controls)
+        else {
             fm.beginTransaction()
                     .replace(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
                     .commit();
@@ -224,8 +245,6 @@ public class MainActivity
         controlFragment.updateProgress(0);
         controlFragment.setPlayingBook(null);
         controlFragment.refresh();
-
-        current_track_duration = 0;
     }
 
     @Override
@@ -295,6 +314,7 @@ public class MainActivity
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_SELECTED_BOOK, selectedBook);
         outState.putParcelable(KEY_PLAYING_BOOK, playingBook);
+        outState.putInt(KEY_PLAYING_BOOK_LOCATION, current_track_position);
         outState.putParcelable(KEY_BOOKLIST, bookList);
     }
 
