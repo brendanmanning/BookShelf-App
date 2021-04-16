@@ -60,18 +60,18 @@ public class MainActivity
                 return false;
             }
 
-            try {
-
-                current_track_position = progress.getProgress();
-                controlFragment.updateProgress(
-                        calculateSeekBarDisplayProgress(
-                                progress.getProgress(), selectedBook
-                        )
-                );
-
-            } catch (Exception e) {
-                System.out.println("Caught an exception");
+            if(playingBook == null) {
+                System.out.println("Playing book null");
+                return false;
             }
+
+            current_track_position = progress.getProgress();
+            controlFragment.updateProgress(
+                calculateSeekBarDisplayProgress(
+                    progress.getProgress(), selectedBook
+                )
+            );
+
             return true;
 
         }
@@ -230,8 +230,13 @@ public class MainActivity
 
     @Override
     public void onSeekTo(int location) {
-        System.out.println("Trying to seek to " + location);
-        binder.seekTo((int) (((double) location/100) * selectedBook.getDuration()));
+        System.out.print("Trying to seek to " + location);
+        if (playingBook == null) {
+            System.out.println("  => ERROR (playingBook null)");
+        } else {
+            binder.seekTo((int) (((double) location/100) * playingBook.getDuration()));
+            System.out.println("  => DONE");
+        }
 //        controlFragment.updateProgress(
 //            calculateSeekBarDisplayProgress(
 //                location,
