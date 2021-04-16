@@ -25,7 +25,10 @@ public class ControlFragment extends Fragment {
     ControlFragmentInterface parent;
 
     private static final String BOOK_KEY = "book";
+    private static final String PROGRESS_KEY = "progress";
+
     private Book book;
+    private int progress;
 
     View view;
     TextView labelTextView;
@@ -36,10 +39,11 @@ public class ControlFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ControlFragment newInstance(Book book) {
+    public static ControlFragment newInstance(Book book, int progress) {
         ControlFragment fragment = new ControlFragment();
         Bundle args = new Bundle();
         args.putParcelable(BOOK_KEY, book);
+        args.putInt(PROGRESS_KEY, progress);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,16 +59,12 @@ public class ControlFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             book = getArguments().getParcelable(BOOK_KEY);
+            progress = getArguments().getInt(PROGRESS_KEY);
         }
     }
 
     public void updateProgress(int progress) {
-        if(this.seekBar == null) {
-            System.out.println("SEEK BAR IS NULL");
-        } else {
-            System.out.println(" ==> Setting progress to " + progress);
-            this.seekBar.setProgress(progress);
-        }
+        this.progress = progress;
     }
 
     public void setPlayingBook(Book book) {
@@ -73,12 +73,18 @@ public class ControlFragment extends Fragment {
 
     public void refresh() {
         labelTextView.setText(getCorrectLabelText());
+        this.seekBar.setProgress(getScaledProgress());
     }
 
     private String getCorrectLabelText() {
         return this.book != null
                 ? getString(R.string.control_fragment_something_playing_label_prefix) + book.getTitle()
                 : getString(R.string.control_fragment_nothing_playing_label);
+    }
+
+    private int getScaledProgress() {
+        if(book == null) return 0;
+        return  (int) (100 * ((double) progress / (double) book.getDuration()));
     }
 
     @Override
@@ -94,6 +100,7 @@ public class ControlFragment extends Fragment {
         seekBar = view.findViewById(R.id.control_fragment_seekbar);
 
         labelTextView.setText(getCorrectLabelText());
+        seekBar.setProgress(getScaledProgress());
 
         playButton.setOnClickListener(v -> parent.onPlayButtonPressed());
         pauseButton.setOnClickListener(v -> parent.onPauseButtonPressed());

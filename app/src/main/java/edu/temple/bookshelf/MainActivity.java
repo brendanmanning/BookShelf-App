@@ -66,11 +66,12 @@ public class MainActivity
 
             try {
                 current_track_position = progress.getProgress();
-                controlFragment.updateProgress(
-                        calculateSeekBarDisplayProgress(
-                                progress.getProgress(), playingBook
-                        )
-                );
+                controlFragment.updateProgress(progress.getProgress());
+                controlFragment.refresh();
+//                        calculateSeekBarDisplayProgress(
+//                                progress.getProgress(), playingBook
+//                        )
+//                );
             } catch (Exception e) {
                 System.out.println("An exception was thrown trying to update the seekBar. It was caught silently.");
             }
@@ -162,16 +163,7 @@ public class MainActivity
 
         // Create a new control fragment when we rotate the device
         // This approach resolves some memory errors
-        controlFragment = new ControlFragment();
-
-        // If we're playing a book, make sure the ControlFragment
-        // correctly reflects the book's state
-        if(playingBook != null) {
-            controlFragment.setPlayingBook(playingBook);
-            controlFragment.updateProgress(
-                calculateSeekBarDisplayProgress(current_track_position, playingBook)
-            );
-        }
+        controlFragment = (playingBook != null) ? ControlFragment.newInstance(playingBook, current_track_position) : new ControlFragment();
 
         // Add the control fragment if it doesn't already exist
         if(! (fm.findFragmentById(R.id.controller_container) instanceof ControlFragment)) {
@@ -188,6 +180,7 @@ public class MainActivity
                     .replace(R.id.controller_container, controlFragment, "TAG_CONTROLLER")
                     .commit();
         }
+
 
         System.out.println("Starting service...");
         startService(
