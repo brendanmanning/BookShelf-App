@@ -64,12 +64,16 @@ public class MainActivity
                 return false;
             }
 
-            current_track_position = progress.getProgress();
-            controlFragment.updateProgress(
-                calculateSeekBarDisplayProgress(
-                    progress.getProgress(), playingBook
-                )
-            );
+            try {
+                current_track_position = progress.getProgress();
+                controlFragment.updateProgress(
+                        calculateSeekBarDisplayProgress(
+                                progress.getProgress(), playingBook
+                        )
+                );
+            } catch (Exception e) {
+                System.out.println("An exception was thrown trying to update the seekBar. It was caught silently.");
+            }
 
             return true;
 
