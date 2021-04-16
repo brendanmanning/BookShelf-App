@@ -67,7 +67,7 @@ public class MainActivity
             current_track_position = progress.getProgress();
             controlFragment.updateProgress(
                 calculateSeekBarDisplayProgress(
-                    progress.getProgress(), selectedBook
+                    progress.getProgress(), playingBook
                 )
             );
 
