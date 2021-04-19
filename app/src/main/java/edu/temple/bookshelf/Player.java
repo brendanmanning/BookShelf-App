@@ -20,7 +20,7 @@ public class Player {
      * play - play a book by id
      * @param id Book id
      */
-    public void play(int id) {
+    public static void play(int id) {
         if(doesLocalCopyExist(id)) {
 
         } else {
@@ -34,14 +34,14 @@ public class Player {
     /**
      * pause - pause the currently running book if there is one
      */
-    public void pause() {
+    public static void pause() {
 
     }
 
     /**
      * stop - stop the currently running book if there is one
      */
-    public void stop() {
+    public static void stop() {
 
     }
 
@@ -54,7 +54,7 @@ public class Player {
      * @param id - Book id
      * @return Seconds into the book, if previously started, or 0 if the book has never been started
      */
-    private int startPosition(int id) {
+    private static int startPosition(int id) {
         return 0;
     }
 
@@ -62,7 +62,7 @@ public class Player {
      * currentlyPlayingBook - If a book was playing the last time the user left, this is the ID of that book
      * @return A book id or -1 if no book had been playing
      */
-    private int currentlyPlayingBook() {
+    private static int currentlyPlayingBook() {
         return -1;
     }
 
@@ -70,7 +70,7 @@ public class Player {
      *              Manage file downloads               *
      * ************************************************ */
 
-    private boolean doesLocalCopyExist(int id) {
+    private static boolean doesLocalCopyExist(int id) {
         return new File(getBookLocation(id)).exists();
     }
 
@@ -79,7 +79,7 @@ public class Player {
      * @param id
      * @return
      */
-    private void download(int id) {
+    private static void download(int id) {
         new Thread(() -> {
             try {
 
@@ -102,7 +102,7 @@ public class Player {
         }).start();
     }
 
-    private String getBookLocation(int id) {
+    private static String getBookLocation(int id) {
         return Environment.getDataDirectory() + "/books/" + id + ".mp3";
     }
 
