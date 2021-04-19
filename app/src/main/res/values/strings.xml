@@ -9,7 +9,7 @@
     <string name="form_cancel">Cancel</string>
 
     <string name="control_fragment_nothing_playing_label">Pick a book to play</string>
-    <string name="control_fragment_something_playing_label_prefix">Playing: </string>
+    <string name="control_fragment_now_playing">Now Playing: %1$s</string>
 
     <string name="control_fragment_play_button_label">PLAY</string>
     <string name="control_fragment_pause_button_label">PAUSE</string>

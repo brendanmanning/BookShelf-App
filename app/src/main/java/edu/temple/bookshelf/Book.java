@@ -6,25 +6,25 @@ import android.os.Parcelable;
 public class Book implements Parcelable {
 
     private int id;
-    private int duration;
     private String title;
     private String author;
     private String coverUrl;
+    private int duration;
 
-    public Book(int id, int duration, String title, String author, String coverUrl) {
+    public Book(int id, String title, String author, String coverUrl, int duration) {
         this.id = id;
-        this.duration = duration;
         this.title = title;
         this.author = author;
         this.coverUrl = coverUrl;
+        this.duration = duration;
     }
 
     protected Book(Parcel in) {
         id = in.readInt();
-        duration = in.readInt();
         title = in.readString();
         author = in.readString();
         coverUrl = in.readString();
+        duration = in.readInt();
     }
 
     public static final Creator<Book> CREATOR = new Creator<Book>() {
@@ -42,8 +42,6 @@ public class Book implements Parcelable {
     public int getId() {
         return id;
     }
-
-    public int getDuration() { return duration; }
 
     public void setId(int id) {
         this.id = id;
@@ -73,6 +71,13 @@ public class Book implements Parcelable {
         this.coverUrl = coverUrl;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 
     @Override
     public int describeContents() {
@@ -82,9 +87,9 @@ public class Book implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
-        parcel.writeInt(duration);
         parcel.writeString(title);
         parcel.writeString(author);
         parcel.writeString(coverUrl);
+        parcel.writeInt(duration);
     }
 }
