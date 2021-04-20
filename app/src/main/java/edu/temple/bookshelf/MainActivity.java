@@ -274,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     public void changePosition(int progress) {
         if (serviceConnected)
-            Player.seekTo((int) ((progress / 100f) * playingBook.getDuration()));
+            Player.seekTo(progress);
 
         // mediaControl.seekTo((int) ((progress / 100f) * playingBook.getDuration()));
     }

@@ -32,6 +32,8 @@ public class Player {
 
     public static final String PLAYER_UPDATE_BUNDLE_BOOK_KEY = "playerUpdateBook";
     public static final String PLAYER_UPDATE_BUNDLE_PROGRESS_KEY = "playerProgressBook";
+
+    private static final String PLAYER_CURRENT_BOOK = "PLAYER_CURRENT_BOOK";
     private static final String PLAYER_CURRENT_SONG_PROGRESS = "PLAYER_CURRENT_SONG_PROGRESS";
 
     private static Book playingBook;
@@ -105,9 +107,12 @@ public class Player {
 
         // Save the current position
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(PLAYER_CURRENT_BOOK, playingBook.getId());
         editor.putInt(PLAYER_CURRENT_SONG_PROGRESS, playingSeconds);
         editor.commit();
 
+        // Actually pause the book
+        mediaControl.pause();
 
     }
 
@@ -116,13 +121,22 @@ public class Player {
      */
     public static void stop() {
 
+        // Clear the saved current position
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(PLAYER_CURRENT_BOOK, -1);
+        editor.putInt(PLAYER_CURRENT_SONG_PROGRESS, -1);
+        editor.commit();
+
+        // Actually stop the book
+        mediaControl.stop();
+
     }
 
     /**
      * seekTo - seeks the progressbar to a specific location
      */
-    public static void seekTo(int progressLocation) {
-
+    public static void seekTo(int seconds) {
+        mediaControl.seekTo((int) ((seconds / 100f) * playingBook.getDuration()));
     }
 
     /* ************************************************ *
