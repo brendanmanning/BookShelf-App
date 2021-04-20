@@ -17,6 +17,8 @@ import android.os.Message;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.File;
+
 import edu.temple.audiobookplayer.AudiobookService;
 
 public class MainActivity extends AppCompatActivity implements BookListFragment.BookSelectedInterface, ControlFragment.ControlInterface {
@@ -33,8 +35,10 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     private final String KEY_BOOKLIST = "searchedook";
     private final int BOOK_SEARCH_REQUEST_CODE = 123;
 
-    private AudiobookService.MediaControlBinder mediaControl;
+    // private AudiobookService.MediaControlBinder mediaControl;
     private boolean serviceConnected;
+
+    private File filesDir;
 
     Intent serviceIntent;
 
@@ -56,8 +60,9 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            mediaControl = (AudiobookService.MediaControlBinder) iBinder;
-            mediaControl.setProgressHandler(progressHandler);
+            Player.connectService(iBinder, progressHandler, filesDir);
+//            mediaControl = (AudiobookService.MediaControlBinder) iBinder;
+//            mediaControl.setProgressHandler(progressHandler);
             serviceConnected = true;
         }
 
@@ -72,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        filesDir = this.getFilesDir();
         serviceIntent = new Intent (this, AudiobookService.class);
 
         bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
@@ -210,7 +216,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             playingBook = selectedBook;
             controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, playingBook.getTitle()));
             if (serviceConnected) {
-                mediaControl.play(selectedBook.getId());
+                // mediaControl.play(selectedBook.getId());
+                Player.play(selectedBook.getId());
             }
 
             // Make sure that the service doesn't stop
@@ -222,14 +229,17 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     public void pause() {
         if (serviceConnected) {
-            mediaControl.pause();
+            // mediaControl.pause();
+            Player.pause();
         }
     }
 
     @Override
     public void stop() {
         if (serviceConnected)
-            mediaControl.stop();
+            Player.stop();
+
+        // mediaControl.stop();
 
         // If no book is playing, then it's fine to let
         // the service stop once the activity is destroyed
@@ -239,7 +249,9 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     public void changePosition(int progress) {
         if (serviceConnected)
-            mediaControl.seekTo((int) ((progress / 100f) * playingBook.getDuration()));
+            Player.seekTo((int) ((progress / 100f) * playingBook.getDuration()));
+
+        // mediaControl.seekTo((int) ((progress / 100f) * playingBook.getDuration()));
     }
 
     @Override
