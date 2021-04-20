@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.function.Function;
 
 import edu.temple.audiobookplayer.AudiobookService;
 
@@ -39,28 +41,49 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     private boolean serviceConnected;
 
     private File filesDir;
+    private SharedPreferences sharedPreferences;
 
     Intent serviceIntent;
 
     BookList bookList;
 
-    Handler progressHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
-        @Override
-        public boolean handleMessage(@NonNull Message message) {
-            // Don't update contols if we don't know what bok the service is playing
-            if (message.obj != null && playingBook != null) {
-                controlFragment.updateProgress((int) (((float) ((AudiobookService.BookProgress) message.obj).getProgress() / playingBook.getDuration()) * 100));
-                controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, playingBook.getTitle()));
-            }
-
-            return true;
-        }
-    });
+//    Handler progressHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
+//        @Override
+//        public boolean handleMessage(@NonNull Message message) {
+//
+//            // Read valid messages from the AudioBookService
+//            if (message.obj != null && playingBook != null) {
+//
+//                // Update the UI state
+//                int progress = (int) (((float) ((AudiobookService.BookProgress) message.obj).getProgress() / playingBook.getDuration()) * 100);
+//                controlFragment.updateProgress(progress);
+//                controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, playingBook.getTitle()));
+//
+//                // Update the helper "Player" state
+//                Player.notifyState(playingBook, progress);
+//            }
+//
+//            return true;
+//        }
+//    });
 
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Player.connectService(iBinder, progressHandler, filesDir);
+            // Player.connectService(filesDir, sharedPreferences, iBinder, progressHandler);
+            Player.connectService(filesDir, sharedPreferences, iBinder, bundle -> {
+                System.out.println("Got a bundle from the callback!!!");
+                System.out.println(bundle.toString());
+
+                int p = bundle.getInt(Player.PLAYER_UPDATE_BUNDLE_PROGRESS_KEY);
+                Book b = (Book) bundle.getParcelable(Player.PLAYER_UPDATE_BUNDLE_BOOK_KEY);
+
+                controlFragment.updateProgress(p);
+                controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, b.getTitle()));
+
+                return null;
+            });
+
 //            mediaControl = (AudiobookService.MediaControlBinder) iBinder;
 //            mediaControl.setProgressHandler(progressHandler);
             serviceConnected = true;
@@ -78,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         setContentView(R.layout.activity_main);
 
         filesDir = this.getFilesDir();
+        sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+
         serviceIntent = new Intent (this, AudiobookService.class);
 
         bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
@@ -217,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, playingBook.getTitle()));
             if (serviceConnected) {
                 // mediaControl.play(selectedBook.getId());
-                Player.play(selectedBook.getId());
+                Player.play(selectedBook);
             }
 
             // Make sure that the service doesn't stop
