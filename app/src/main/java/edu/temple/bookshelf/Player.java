@@ -32,7 +32,7 @@ public class Player {
     public static final String PLAYER_UPDATE_BUNDLE_PROGRESS_KEY = "playerProgressBook";
 
     private static final String PLAYER_CURRENT_BOOK = "PLAYER_CURRENT_BOOK";
-    private static final String PLAYER_CURRENT_BOOK_PROGRESS = "PLAYER_CURRENT_BOOK_PROGRESS";
+    private static final String PLAYER_BOOK_PROGRESS = "PLAYER_BOOK_PROGRESS/id=";
 
     private static Book playingBook;
     private static int playingSeconds;
@@ -106,7 +106,7 @@ public class Player {
         // Save the current position
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(PLAYER_CURRENT_BOOK, playingBook.getId());
-        editor.putInt(PLAYER_CURRENT_BOOK_PROGRESS, playingSeconds);
+        editor.putInt(PLAYER_BOOK_PROGRESS + playingBook.getId(), playingSeconds);
         editor.commit();
 
         // Actually pause the book
@@ -122,7 +122,7 @@ public class Player {
         // Clear the saved current position
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(PLAYER_CURRENT_BOOK, -1);
-        editor.putInt(PLAYER_CURRENT_BOOK_PROGRESS, -1);
+        editor.putInt(PLAYER_BOOK_PROGRESS + playingBook.getId(), 0);
         editor.commit();
 
         // Actually stop the book
