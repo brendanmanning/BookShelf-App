@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     private final String KEY_BOOKLIST = "searchedook";
     private final int BOOK_SEARCH_REQUEST_CODE = 123;
 
-    // private AudiobookService.MediaControlBinder mediaControl;
     private boolean serviceConnected;
 
     private File filesDir;
