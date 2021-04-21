@@ -216,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             playingBook = selectedBook;
             controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, playingBook.getTitle()));
             if (serviceConnected) {
-                // mediaControl.play(selectedBook.getId());
                 Player.play(selectedBook);
             }
 
@@ -229,7 +228,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     public void pause() {
         if (serviceConnected) {
-            // mediaControl.pause();
             Player.pause();
         }
     }
