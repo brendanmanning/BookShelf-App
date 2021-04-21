@@ -47,33 +47,10 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
     BookList bookList;
 
-//    Handler progressHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
-//        @Override
-//        public boolean handleMessage(@NonNull Message message) {
-//
-//            // Read valid messages from the AudioBookService
-//            if (message.obj != null && playingBook != null) {
-//
-//                // Update the UI state
-//                int progress = (int) (((float) ((AudiobookService.BookProgress) message.obj).getProgress() / playingBook.getDuration()) * 100);
-//                controlFragment.updateProgress(progress);
-//                controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, playingBook.getTitle()));
-//
-//                // Update the helper "Player" state
-//                Player.notifyState(playingBook, progress);
-//            }
-//
-//            return true;
-//        }
-//    });
-
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            // Player.connectService(filesDir, sharedPreferences, iBinder, progressHandler);
             Player.connectService(filesDir, sharedPreferences, iBinder, bundle -> {
-                System.out.println("Got a bundle from the callback!!!");
-                System.out.println(bundle.toString());
 
                 int p = bundle.getInt(Player.PLAYER_UPDATE_BUNDLE_PROGRESS_KEY);
                 Book b = (Book) bundle.getParcelable(Player.PLAYER_UPDATE_BUNDLE_BOOK_KEY);
@@ -84,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                 return null;
             });
 
-//            mediaControl = (AudiobookService.MediaControlBinder) iBinder;
-//            mediaControl.setProgressHandler(progressHandler);
             serviceConnected = true;
         }
 
@@ -275,8 +250,6 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     public void changePosition(int progress) {
         if (serviceConnected)
             Player.seekTo(progress);
-
-        // mediaControl.seekTo((int) ((progress / 100f) * playingBook.getDuration()));
     }
 
     @Override
