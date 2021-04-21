@@ -1,6 +1,5 @@
 package edu.temple.bookshelf;
 
-import android.content.ComponentName;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
@@ -8,7 +7,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 
@@ -34,7 +32,7 @@ public class Player {
     public static final String PLAYER_UPDATE_BUNDLE_PROGRESS_KEY = "playerProgressBook";
 
     private static final String PLAYER_CURRENT_BOOK = "PLAYER_CURRENT_BOOK";
-    private static final String PLAYER_CURRENT_SONG_PROGRESS = "PLAYER_CURRENT_SONG_PROGRESS";
+    private static final String PLAYER_CURRENT_BOOK_PROGRESS = "PLAYER_CURRENT_BOOK_PROGRESS";
 
     private static Book playingBook;
     private static int playingSeconds;
@@ -108,7 +106,7 @@ public class Player {
         // Save the current position
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(PLAYER_CURRENT_BOOK, playingBook.getId());
-        editor.putInt(PLAYER_CURRENT_SONG_PROGRESS, playingSeconds);
+        editor.putInt(PLAYER_CURRENT_BOOK_PROGRESS, playingSeconds);
         editor.commit();
 
         // Actually pause the book
@@ -124,7 +122,7 @@ public class Player {
         // Clear the saved current position
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(PLAYER_CURRENT_BOOK, -1);
-        editor.putInt(PLAYER_CURRENT_SONG_PROGRESS, -1);
+        editor.putInt(PLAYER_CURRENT_BOOK_PROGRESS, -1);
         editor.commit();
 
         // Actually stop the book
@@ -184,7 +182,6 @@ public class Player {
 
                 System.out.println("Environment.getDataDirectory() - " + Environment.getDataDirectory());
                 System.out.println("Environment.getRootDirectory() - " + Environment.getRootDirectory());
-
 
                 // Get an input and output stream to download the file
                 String location = getBookLocation(id);
