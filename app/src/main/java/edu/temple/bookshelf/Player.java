@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.function.Function;
 
 import edu.temple.audiobookplayer.AudiobookService;
@@ -86,16 +88,54 @@ public class Player {
      * @param book A Book object
      */
     public static void play(Book book) {
+
+        // Is another book currently playing
+        boolean currentlyPlayingAnotherBook = playingBook != null && playingBook.getId() != book.getId();
+
+        // If we're currently playing another book, save the current position
+        // This can be achieved by pausing it, since the pause method saves
+        // the current position in user preferences
+        if(currentlyPlayingAnotherBook) {
+            pause();
+        }
+
+        // Now, set the new book as the one that's currently playing
         playingBook = book;
+
+        // Play the book locally if we can
         if(doesLocalCopyExist(book)) {
+
+            System.out.println("Playing " + book.getTitle() + " from a local copy...");
+
+            String location = getBookLocation(playingBook.getId());
+            int startPosition = startPosition(playingBook);
+
+            System.out.println("\tLocal copy: " + location);
+            System.out.println("\tStart Position: " + startPosition);
+            // If we're playing from a local file, we might have the user's previous
+            // If not, the startPosition method will default to 0, so no need to add
+            // any extra code to handle that here
+            mediaControl.play(
+                new File(location),
+                startPosition(playingBook)
+            );
+
+        }
+
+        // If we don't currently have a local copy
+        else {
+
+            System.out.println("Playing " + book.getTitle() + " from the streaming service...");
+
+            // Play with the book this time using the streaming service
             mediaControl.play(playingBook.getId());
-        } else {
-            // Play with the service
 
-
-            // Download a copy in a background thread
+            // Download a copy in a background thread so that next time
+            // we can play from the disk
             download(playingBook.getId());
         }
+
+        Player.log();
     }
 
     /**
@@ -103,14 +143,20 @@ public class Player {
      */
     public static void pause() {
 
-        // Save the current position
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(PLAYER_CURRENT_BOOK, playingBook.getId());
-        editor.putInt(PLAYER_BOOK_PROGRESS + playingBook.getId(), playingSeconds);
-        editor.commit();
+        // Save the current position, if there's a currently playing book
+        if(playingBook != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(PLAYER_CURRENT_BOOK, playingBook.getId());
+            editor.putInt(PLAYER_BOOK_PROGRESS + playingBook.getId(), playingSeconds);
+            editor.commit();
+        }
 
-        // Actually pause the book
-        mediaControl.pause();
+        // Actually pause the book, if there's a book playing
+        if(mediaControl.isPlaying()) {
+            mediaControl.pause();
+        }
+
+        Player.log();
 
     }
 
@@ -128,6 +174,8 @@ public class Player {
         // Actually stop the book
         mediaControl.stop();
 
+        Player.log();
+
     }
 
     /**
@@ -143,11 +191,11 @@ public class Player {
 
     /**
      * startPosition - If a book is restarted, played from where the user stopped last time
-     * @param id - Book id
+     * @param book - Book book
      * @return Seconds into the book, if previously started, or 0 if the book has never been started
      */
-    private static int startPosition(int id) {
-        return 0;
+    private static int startPosition(Book book) {
+        return sharedPreferences.getInt(PLAYER_BOOK_PROGRESS + book.getId(), 0);
     }
 
     /**
@@ -195,6 +243,9 @@ public class Player {
                 output.flush();
                 output.close();
                 input.close();
+
+                // Log to the console
+                Player.log();
             } catch (Exception e) {
                 System.out.println("Threw an exception trying to download book (" + id + ")");
                 e.printStackTrace();
@@ -203,11 +254,11 @@ public class Player {
     }
 
     private static String getBookLocation(int id) {
-        return getBooksLocation().getAbsolutePath() + id + ".mp3";
+        return getBooksLocation().getAbsolutePath() + "/" + id + ".mp3";
     }
 
     private static String getBookLocation(Book book) {
-        return getBooksLocation().getAbsolutePath() + book.getId() + ".mp3";
+        return getBookLocation(book.getId());
     }
 
     private static File getBooksLocation() {
@@ -217,6 +268,33 @@ public class Player {
             System.out.println("Created? = " + booksFolder.mkdirs());
         }
         return booksFolder;
+    }
+
+    public static void log() {
+
+        System.out.println("******** SharedPreferences Keys ********");
+
+        Map<String, ?> prefs = sharedPreferences.getAll();
+        Iterator keyIterator = prefs.keySet().iterator();
+        while(keyIterator.hasNext()) {
+            String key = keyIterator.next().toString();
+
+            if(key.startsWith("PLAYER_BOOK_PROGRESS/id=")) {
+                System.out.println(key + "   ->   progress=" + sharedPreferences.getInt(key, -9999));
+            }
+
+            else if(key.equals("PLAYER_CURRENT_BOOK")) {
+                System.out.println(key + "   ->   id=" + sharedPreferences.getInt(key, -9999));
+            }
+
+        }
+
+        System.out.println("******** BooksLocation Files ********");
+
+        File booksLocation = getBooksLocation();
+        for(File book : booksLocation.listFiles()) {
+            System.out.println("[" + book.getAbsolutePath() + "]: " + book.getName());
+        }
     }
 
 }

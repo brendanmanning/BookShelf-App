@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             playingBook = selectedBook;
             controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, playingBook.getTitle()));
             if (serviceConnected) {
-                Player.play(selectedBook);
+                Player.play(playingBook);
             }
 
             // Make sure that the service doesn't stop
@@ -253,5 +253,11 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     protected void onDestroy() {
         super.onDestroy();
         unbindService(serviceConnection);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
     }
 }
