@@ -17,6 +17,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
@@ -225,6 +228,29 @@ public class Player {
 
                 // Define a URL and get a connection to it
                 URL url = new URL("https://kamorris.com/lab/audlib/download.php?id=" + id);
+
+                ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+
+                FileOutputStream fileOutputStream = new FileOutputStream(getBookLocation(id));
+                FileChannel fileChannel = fileOutputStream.getChannel();
+
+                fileOutputStream.getChannel()
+                        .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+
+                // Log to the console
+                Player.log();
+            } catch (Exception e) {
+                System.out.println("Threw an exception trying to download book (" + id + ")");
+                e.printStackTrace();
+            }
+        }).start();
+    }
+    private static void _download(int id) {
+        new Thread(() -> {
+            try {
+
+                // Define a URL and get a connection to it
+                URL url = new URL("https://kamorris.com/lab/audlib/download.php?id=" + id);
                 URLConnection connection = url.openConnection();
                 connection.connect();
 
@@ -240,8 +266,8 @@ public class Player {
                 OutputStream output = new FileOutputStream(file);
 
                 // Close the input/output connections
-                output.flush();
                 output.close();
+                output.flush();
                 input.close();
 
                 // Log to the console
