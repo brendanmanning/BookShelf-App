@@ -41,6 +41,7 @@ public class Player {
 
     private static Book playingBook;
     private static int playingSeconds;
+    private static double playingPercent;
 
     private static Function<Bundle, Void> progressCallback;
 
@@ -52,7 +53,8 @@ public class Player {
             if (message.obj != null && playingBook != null) {
 
                 // Update the UI state
-                playingSeconds = (int) (((float) ((AudiobookService.BookProgress) message.obj).getProgress() / playingBook.getDuration()) * 100);
+                playingSeconds = ((AudiobookService.BookProgress) message.obj).getProgress();
+                playingPercent = (int) (((float) playingSeconds / playingBook.getDuration()) * 100);
 
                 if(progressCallback != null) {
                     Bundle bundle = new Bundle();
@@ -77,10 +79,10 @@ public class Player {
         progressCallback = callback;
     }
 
-    public static void notifyState(Book currentlyPlayingBook, int seconds) {
-        playingBook = currentlyPlayingBook;
-        playingSeconds = seconds;
-    }
+//    public static void notifyState(Book currentlyPlayingBook, int seconds) {
+//        playingBook = currentlyPlayingBook;
+//        playingSeconds = seconds;
+//    }
 
     /* ************************************************ *
      * General methods to control the AudiobookService  *
@@ -184,8 +186,9 @@ public class Player {
     /**
      * seekTo - seeks the progressbar to a specific location
      */
-    public static void seekTo(int seconds) {
-        mediaControl.seekTo((int) ((seconds / 100f) * playingBook.getDuration()));
+    public static void seekTo(int st) {
+        System.out.println("Seeking to " + st);
+        mediaControl.seekTo((int) ((st / 100f) * playingBook.getDuration()));
     }
 
     /* ************************************************ *

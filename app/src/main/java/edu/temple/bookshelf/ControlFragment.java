@@ -83,8 +83,11 @@ public class ControlFragment extends Fragment {
         nowPlayingTextView.setText(title);
     }
 
-    public void updateProgress(int progress) {
-        seekBar.setProgress(progress);
+    public void updateProgress(Book book, int progress) {
+        int percent = (int) ((double) progress * 100 / (double) book.getDuration());
+        System.out.println("Updating progress to seconds=" + progress);
+        System.out.println("Updating progress to percent=" + percent);
+        seekBar.setProgress(percent);
     }
 
     interface ControlInterface {
