@@ -64,8 +64,11 @@ public class ControlFragment extends Fragment {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (b)
+                if (b) {
                     parentActivity.changePosition(i);
+                } else {
+                    System.out.println("Ignored seek event");
+                }
             }
 
             @Override

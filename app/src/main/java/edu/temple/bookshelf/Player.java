@@ -94,24 +94,27 @@ public class Player {
      */
     public static void play(Book book) {
 
-        // Is the book we're selecting currently playing?
-        boolean currentlyPlayingSelectedBook = playingBook != null && playingBook.getId() == book.getId();
+        pause();
 
-        // If so, just pause the book
-        if(currentlyPlayingSelectedBook) {
-            pause();
-            return;
-        }
+        // Is the book we're selecting currently playing?
+//        boolean currentlyPlayingSelectedBook = playingBook != null && playingBook.getId() == book.getId();
+//
+//        // If so, just pause the book
+//        if(currentlyPlayingSelectedBook) {
+//            System.out.println("Currently playing the selected book, pausing...");
+//            pause();
+//            return;
+//        }
 
         // Is another book currently playing
-        boolean currentlyPlayingAnotherBook = playingBook != null && playingBook.getId() != book.getId();
+//        boolean currentlyPlayingAnotherBook = playingBook != null && playingBook.getId() != book.getId();
 
         // If we're currently playing another book, save the current position
         // This can be achieved by pausing it, since the pause method saves
         // the current position in user preferences
-        if(currentlyPlayingAnotherBook) {
-            pause();
-        }
+//        if(currentlyPlayingAnotherBook) {
+//            pause();
+//        }
 
         // Now, set the new book as the one that's currently playing
         playingBook = book;
@@ -181,8 +184,8 @@ public class Player {
 
         // Clear the saved current position
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(PLAYER_BOOK_PROGRESS + playingBook.getId());
         editor.putInt(PLAYER_CURRENT_BOOK, -1);
-        editor.putInt(PLAYER_BOOK_PROGRESS + playingBook.getId(), 0);
         editor.commit();
 
         // Actually stop the book
@@ -215,7 +218,18 @@ public class Player {
      * @return Seconds into the book, if previously started, or 0 if the book has never been started
      */
     private static int startPosition(Book book) {
-        return sharedPreferences.getInt(PLAYER_BOOK_PROGRESS + book.getId(), 0);
+        int savedLocation = sharedPreferences.getInt(PLAYER_BOOK_PROGRESS + book.getId(), 0);
+
+        // Backtrack 10 seconds
+        if(savedLocation >= 10) {
+            System.out.print("Backtracking 10 seconds from sec=" + savedLocation);
+            savedLocation -= 10;
+            System.out.println(" to sec=" + savedLocation);
+
+            // Handles the case of savedLocation in (0,10)
+        } else
+            savedLocation = 0;
+        return savedLocation;
     }
 
     /**
