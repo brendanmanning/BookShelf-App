@@ -97,30 +97,25 @@ public class Player {
         pause();
 
         // Is the book we're selecting currently playing?
-//        boolean currentlyPlayingSelectedBook = playingBook != null && playingBook.getId() == book.getId();
-//
-//        // If so, just pause the book
-//        if(currentlyPlayingSelectedBook) {
-//            System.out.println("Currently playing the selected book, pausing...");
-//            pause();
-//            return;
-//        }
+        boolean currentlyPlayingSelectedBook = playingBook != null && playingBook.getId() == book.getId();
 
-        // Is another book currently playing
-//        boolean currentlyPlayingAnotherBook = playingBook != null && playingBook.getId() != book.getId();
+        // If so, just pause the book
+        if(currentlyPlayingSelectedBook) {
+            System.out.println("Currently playing the selected book, pausing...");
+            pause();
+            return;
+        }
 
-        // If we're currently playing another book, save the current position
-        // This can be achieved by pausing it, since the pause method saves
-        // the current position in user preferences
-//        if(currentlyPlayingAnotherBook) {
-//            pause();
-//        }
+        // Regardless of whether or not a book is currently playing,
+        // use the Player.pause() method to backup current track progress
+        // If nothing is playing, pause() will handle this gracefully
+        pause();
 
         // Now, set the new book as the one that's currently playing
         playingBook = book;
 
         // Play the book locally if we can
-        if(doesLocalCopyExist(book)) {
+        if(doesLocalCopyExist(playingBook)) {
 
             System.out.println("Playing " + book.getTitle() + " from a local copy...");
 
@@ -169,9 +164,12 @@ public class Player {
         }
 
         // This may not work...
+        // If it doesn't work, handle it gracefully
         try {
             mediaControl.pause();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            System.out.println("MediaControl error thrown trying to pause Player");
+        }
 
         Player.log();
 
@@ -183,10 +181,15 @@ public class Player {
     public static void stop() {
 
         // Clear the saved current position
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(PLAYER_BOOK_PROGRESS + playingBook.getId());
-        editor.putInt(PLAYER_CURRENT_BOOK, -1);
-        editor.commit();
+        if(playingBook != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove(PLAYER_BOOK_PROGRESS + playingBook.getId());
+            editor.putInt(PLAYER_CURRENT_BOOK, -1);
+            editor.commit();
+        }
+
+        // There is no longer a playingBook
+        playingBook = null;
 
         // Actually stop the book
         mediaControl.stop();
@@ -329,29 +332,32 @@ public class Player {
 
     public static void log() {
 
-        System.out.println("******** SharedPreferences Keys ********");
+        return;
 
-        Map<String, ?> prefs = sharedPreferences.getAll();
-        Iterator keyIterator = prefs.keySet().iterator();
-        while(keyIterator.hasNext()) {
-            String key = keyIterator.next().toString();
+//        System.out.println("******** SharedPreferences Keys ********");
+//
+//        Map<String, ?> prefs = sharedPreferences.getAll();
+//        Iterator keyIterator = prefs.keySet().iterator();
+//        while(keyIterator.hasNext()) {
+//            String key = keyIterator.next().toString();
+//
+//            if(key.startsWith("PLAYER_BOOK_PROGRESS/id=")) {
+//                System.out.println(key + "   ->   progress=" + sharedPreferences.getInt(key, -9999));
+//            }
+//
+//            else if(key.equals("PLAYER_CURRENT_BOOK")) {
+//                System.out.println(key + "   ->   id=" + sharedPreferences.getInt(key, -9999));
+//            }
+//
+//        }
+//
+//        System.out.println("******** BooksLocation Files ********");
+//
+//        File booksLocation = getBooksLocation();
+//        for(File book : booksLocation.listFiles()) {
+//            System.out.println("[" + book.getAbsolutePath() + "]: " + book.getName());
+//        }
 
-            if(key.startsWith("PLAYER_BOOK_PROGRESS/id=")) {
-                System.out.println(key + "   ->   progress=" + sharedPreferences.getInt(key, -9999));
-            }
-
-            else if(key.equals("PLAYER_CURRENT_BOOK")) {
-                System.out.println(key + "   ->   id=" + sharedPreferences.getInt(key, -9999));
-            }
-
-        }
-
-        System.out.println("******** BooksLocation Files ********");
-
-        File booksLocation = getBooksLocation();
-        for(File book : booksLocation.listFiles()) {
-            System.out.println("[" + book.getAbsolutePath() + "]: " + book.getName());
-        }
     }
 
 }
