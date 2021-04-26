@@ -127,10 +127,12 @@ public class Player {
             // If we're playing from a local file, we might have the user's previous
             // If not, the startPosition method will default to 0, so no need to add
             // any extra code to handle that here
+            System.out.println("Trying to play book with mediaControl...");
             mediaControl.play(
                 new File(location),
                 startPosition(playingBook)
             );
+            System.out.println("</book play code>");
 
         }
 
