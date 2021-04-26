@@ -15,8 +15,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Parcel;
 import android.view.View;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.function.Function;
@@ -96,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         });
 
         if (savedInstanceState != null) {
+
+            System.out.println("savedInstanceState != null");
+
             // Fetch selected book if there was one
             selectedBook = savedInstanceState.getParcelable(KEY_SELECTED_BOOK);
 
@@ -104,9 +111,26 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
             // Fetch previously searched books if one was previously retrieved
             bookList = savedInstanceState.getParcelable(KEY_BOOKLIST);
-        }else {
-            // Create empty booklist if
-            bookList = new BookList();
+        } else {
+
+            System.out.println("savedInstanceState == null");
+
+            // If we're coming back after the application was completely
+            // closed (i.e. there is no savedInstanceState), then we can
+            // check local storage for a persisted user search (BookList)
+            if(this.getBookListJsonLocation().exists()) {
+                System.out.println("BookList JSON exists");
+                bookList = BookList.fromJson(this.getBookListJsonLocation());
+            }
+
+            // Create empty booklist if there is nothing in the instance state
+            // or in the local file system.
+            // We also create an empty BookList here if,  for some reason, the
+            // BookList.fromJson call above returned null
+            if(!this.getBookListJsonLocation().exists() || bookList == null) {
+                System.out.println("BookList JSON does not exist or is otherwise null");
+                bookList = new BookList();
+            }
         }
 
         twoPane = findViewById(R.id.container2) != null;
@@ -205,8 +229,15 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == BOOK_SEARCH_REQUEST_CODE && resultCode == RESULT_OK) {
+
+            // Update the local variable for the booklist w/o changing the pointer in memory
             bookList.clear();
             bookList.addAll((BookList) data.getParcelableExtra(BookSearchActivity.BOOKLIST_KEY));
+
+            // Save BookList as a JSON file s.t. we can return to it later
+            bookList.saveAsJson(this.getBookListJsonLocation());
+
+            // Show a message if we didn't get anything, just for user experience
             if (bookList.size() == 0) {
                 Toast.makeText(this, getString(R.string.error_no_results), Toast.LENGTH_SHORT).show();
             }
@@ -263,6 +294,11 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
     @Override
     protected void onPause() {
         super.onPause();
-
     }
+
+
+    private File getBookListJsonLocation() {
+        return new File(this.getFilesDir().getAbsolutePath() + "/booklist.json");
+    }
+
 }
