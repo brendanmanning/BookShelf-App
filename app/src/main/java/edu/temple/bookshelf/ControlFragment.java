@@ -84,10 +84,14 @@ public class ControlFragment extends Fragment {
     }
 
     public void updateProgress(Book book, int progress) {
-        int percent = (int) ((double) progress * 100 / (double) book.getDuration());
-        System.out.println("Updating progress to seconds=" + progress);
-        System.out.println("Updating progress to percent=" + percent);
-        seekBar.setProgress(percent);
+        if(progress == 0) {
+            seekBar.setProgress(0);
+        } else {
+            int percent = (int) ((double) progress * 100 / (double) book.getDuration());
+            System.out.println("Updating progress to seconds=" + progress);
+            System.out.println("Updating progress to percent=" + percent);
+            seekBar.setProgress(percent);
+        }
     }
 
     interface ControlInterface {

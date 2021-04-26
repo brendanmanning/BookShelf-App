@@ -94,6 +94,15 @@ public class Player {
      */
     public static void play(Book book) {
 
+        // Is the book we're selecting currently playing?
+        boolean currentlyPlayingSelectedBook = playingBook != null && playingBook.getId() == book.getId();
+
+        // If so, just pause the book
+        if(currentlyPlayingSelectedBook) {
+            pause();
+            return;
+        }
+
         // Is another book currently playing
         boolean currentlyPlayingAnotherBook = playingBook != null && playingBook.getId() != book.getId();
 
@@ -156,10 +165,10 @@ public class Player {
             editor.commit();
         }
 
-        // Actually pause the book, if there's a book playing
-        if(mediaControl.isPlaying()) {
+        // This may not work...
+        try {
             mediaControl.pause();
-        }
+        } catch (Exception e) {}
 
         Player.log();
 
@@ -178,6 +187,11 @@ public class Player {
 
         // Actually stop the book
         mediaControl.stop();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(Player.PLAYER_UPDATE_BUNDLE_PROGRESS_KEY, 0);
+        bundle.putParcelable(Player.PLAYER_UPDATE_BUNDLE_BOOK_KEY, null);
+        progressCallback.apply(bundle);
 
         Player.log();
 

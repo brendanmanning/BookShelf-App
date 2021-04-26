@@ -54,8 +54,13 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
                 int p = bundle.getInt(Player.PLAYER_UPDATE_BUNDLE_PROGRESS_KEY);
                 Book b = (Book) bundle.getParcelable(Player.PLAYER_UPDATE_BUNDLE_BOOK_KEY);
 
-                controlFragment.updateProgress(b, p);
-                controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, b.getTitle()));
+                if(b == null) {
+                    controlFragment.updateProgress(b, 0);
+                    controlFragment.setNowPlaying(getString(R.string.control_fragment_nothing_playing_label));
+                } else {
+                    controlFragment.updateProgress(b, p);
+                    controlFragment.setNowPlaying(getString(R.string.control_fragment_now_playing, b.getTitle()));
+                }
 
                 return null;
             });
