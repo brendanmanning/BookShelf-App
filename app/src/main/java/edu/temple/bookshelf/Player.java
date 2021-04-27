@@ -242,14 +242,6 @@ public class Player {
         return savedLocation;
     }
 
-    /**
-     * currentlyPlayingBook - If a book was playing the last time the user left, this is the ID of that book
-     * @return A book id or -1 if no book had been playing
-     */
-    private static int currentlyPlayingBook() {
-        return -1;
-    }
-
     /* ************************************************ *
      *              Manage file downloads               *
      * ************************************************ */
