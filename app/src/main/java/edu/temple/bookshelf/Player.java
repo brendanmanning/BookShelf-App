@@ -79,11 +79,6 @@ public class Player {
         progressCallback = callback;
     }
 
-//    public static void notifyState(Book currentlyPlayingBook, int seconds) {
-//        playingBook = currentlyPlayingBook;
-//        playingSeconds = seconds;
-//    }
-
     /* ************************************************ *
      * General methods to control the AudiobookService  *
      * ************************************************ */
