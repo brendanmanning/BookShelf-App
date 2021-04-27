@@ -283,8 +283,10 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
 
     @Override
     public void changePosition(int progress) {
-        if (serviceConnected)
+        if (serviceConnected) {
+            System.out.println("changePosition seekTo");
             Player.seekTo(progress);
+        }
     }
 
     @Override
