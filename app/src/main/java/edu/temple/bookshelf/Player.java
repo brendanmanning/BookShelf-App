@@ -94,7 +94,12 @@ public class Player {
      */
     public static void play(Book book) {
 
-        pause();
+        try {
+            System.out.println("book=" + book.getTitle());
+        } catch (Exception e) {}
+        try {
+            System.out.println("playingBook=" + playingBook.getTitle());
+        } catch (Exception e) {}
 
         // Is the book we're selecting currently playing?
         boolean currentlyPlayingSelectedBook = playingBook != null && playingBook.getId() == book.getId();
