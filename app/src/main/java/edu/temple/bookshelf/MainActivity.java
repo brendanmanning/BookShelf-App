@@ -257,6 +257,8 @@ public class MainActivity extends AppCompatActivity implements BookListFragment.
             // Make sure that the service doesn't stop
             // if the activity is destroyed while the book is playing
             startService(serviceIntent);
+        } else {
+            Toast.makeText(this, "Can't play when no book selected!", Toast.LENGTH_SHORT).show();
         }
     }
 
