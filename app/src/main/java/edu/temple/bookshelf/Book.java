@@ -15,6 +15,12 @@ public class Book implements Parcelable {
     private String coverUrl;
     private int duration;
 
+    private static final String JSON_KEY_ID = "id";
+    private static final String JSON_KEY_TITLE = "title";
+    private static final String JSON_KEY_AUTHOR = "author";
+    private static final String JSON_KEY_COVERURL = "coverUrl";
+    private static final String JSON_KEY_DURATION = "duration";
+
     public Book(int id, String title, String author, String coverUrl, int duration) {
         this.id = id;
         this.title = title;
@@ -33,21 +39,21 @@ public class Book implements Parcelable {
 
     public static Book fromJson(JSONObject json) throws JSONException {
         return new Book(
-            json.getInt("id"),
-            json.getString("title"),
-            json.getString("author"),
-            json.getString("coverUrl"),
-            json.getInt("duration")
+            json.getInt(JSON_KEY_ID),
+            json.getString(JSON_KEY_TITLE),
+            json.getString(JSON_KEY_AUTHOR),
+            json.getString(JSON_KEY_COVERURL),
+            json.getInt(JSON_KEY_DURATION)
         );
     }
 
     public JSONObject toJson() throws JSONException {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", this.getId());
-        jsonObject.put("title", this.getTitle());
-        jsonObject.put("author", this.getAuthor());
-        jsonObject.put("coverUrl", this.getCoverUrl());
-        jsonObject.put("duration", this.getDuration());
+        jsonObject.put(JSON_KEY_ID, this.getId());
+        jsonObject.put(JSON_KEY_TITLE, this.getTitle());
+        jsonObject.put(JSON_KEY_AUTHOR, this.getAuthor());
+        jsonObject.put(JSON_KEY_COVERURL, this.getCoverUrl());
+        jsonObject.put(JSON_KEY_DURATION, this.getDuration());
         return jsonObject;
     }
 
