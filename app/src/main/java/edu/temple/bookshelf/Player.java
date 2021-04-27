@@ -286,39 +286,6 @@ public class Player {
             }
         }).start();
     }
-    private static void _download(int id) {
-        new Thread(() -> {
-            try {
-
-                // Define a URL and get a connection to it
-                URL url = new URL("https://kamorris.com/lab/audlib/download.php?id=" + id);
-                URLConnection connection = url.openConnection();
-                connection.connect();
-
-                System.out.println("Environment.getDataDirectory() - " + Environment.getDataDirectory());
-                System.out.println("Environment.getRootDirectory() - " + Environment.getRootDirectory());
-
-                // Get an input and output stream to download the file
-                String location = getBookLocation(id);
-                File file = new File(location);
-                //if(!file.exists()) file.createNewFile();
-                System.out.println("Book location: " + location);
-                InputStream input = new BufferedInputStream(connection.getInputStream());
-                OutputStream output = new FileOutputStream(file);
-
-                // Close the input/output connections
-                output.close();
-                output.flush();
-                input.close();
-
-                // Log to the console
-                Player.log();
-            } catch (Exception e) {
-                System.out.println("Threw an exception trying to download book (" + id + ")");
-                e.printStackTrace();
-            }
-        }).start();
-    }
 
     private static String getBookLocation(int id) {
         return getBooksLocation().getAbsolutePath() + "/" + id + ".mp3";
