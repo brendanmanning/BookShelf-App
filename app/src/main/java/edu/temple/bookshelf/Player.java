@@ -207,8 +207,10 @@ public class Player {
      * seekTo - seeks the progressbar to a specific location
      */
     public static void seekTo(int st) {
-        System.out.println("Seeking to " + st);
-        mediaControl.seekTo((int) ((st / 100f) * playingBook.getDuration()));
+        if(playingBook != null) {
+            System.out.println("Seeking to " + st);
+            mediaControl.seekTo((int) ((st / 100f) * playingBook.getDuration()));
+        }
     }
 
     /* ************************************************ *
