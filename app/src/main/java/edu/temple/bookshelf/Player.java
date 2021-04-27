@@ -41,7 +41,6 @@ public class Player {
 
     private static Book playingBook;
     private static int playingSeconds;
-    private static double playingPercent;
 
     private static Function<Bundle, Void> progressCallback;
 
@@ -54,7 +53,6 @@ public class Player {
 
                 // Update the UI state
                 playingSeconds = ((AudiobookService.BookProgress) message.obj).getProgress();
-                playingPercent = (int) (((float) playingSeconds / playingBook.getDuration()) * 100);
 
                 if(progressCallback != null) {
                     Bundle bundle = new Bundle();
