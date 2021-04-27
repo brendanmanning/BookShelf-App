@@ -308,6 +308,17 @@ public class Player {
 
         return;
 
+       // **************************************** //
+       // Dheera,
+       // I used this code to view the state of the internal storage
+       // and sharedPreferences object before I knew about the
+       // Device File Explorer.
+       //
+       // If you find it helpful, you can uncomment the code below
+       // I'm leaving it in-place in case I need to do any last minute
+       // debugging before the deadline
+        // **************************************** //
+
 //        System.out.println("******** SharedPreferences Keys ********");
 //
 //        Map<String, ?> prefs = sharedPreferences.getAll();
